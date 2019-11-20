@@ -11,8 +11,8 @@ function loadMapOfVienna(){
     // Projection
     var projection = d3.geoMercator()
         .scale(80000) //.scale(40000)
-        .center([16.5, 48.2]);
-        //.translate([ width/2, height/2 ]);
+        .center([16.373819, 48.208174])
+        .translate([ width/2, height/2 ]);
 
     d3.json("./data/bezirksgrenzen.json").then(function(data){
         console.log(data);
@@ -31,3 +31,4 @@ function loadMapOfVienna(){
             .attr('stroke-width', '0.5')
     });
 }
+
