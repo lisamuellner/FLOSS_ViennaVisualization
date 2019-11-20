@@ -13,6 +13,50 @@
     <script src="js/script.js"></script>
 </head>
 <body onLoad="loadData()">
-    <svg id="mapOfVienna" width="500" height="500"></svg>
+<header>
+    <h2>Vienna Visualization</h2>
+</header>
+
+<section>
+    <nav>
+        <ul>
+            <li>
+                <label>
+                <input type="checkbox" name="checkbox1" value="checkbox1">
+                Checkbox1
+                </label>
+            </li>
+            <li>
+                <label>
+                    <input type="checkbox" name="checkbox2" value="checkbox2">
+                    Checkbox2
+                </label>
+            </li>
+            <li>
+                <label>
+                <input type="checkbox" name="checkbox3" value="checkbox3">
+                Checkbox3
+                </label>
+            </li>
+        </ul>
+    </nav>
+
+    <article>
+        <svg id="mapOfVienna" width="500" height="500"></svg>
+        <div class="slidecontainer">
+            <p>Time slider:</p>
+            <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+        </div>
+    </article>
+
+    <article>
+
+    </article>
+</section>
+
+<footer>
+    <p>Footer</p>
+</footer>
+
 </body>
 </html>
