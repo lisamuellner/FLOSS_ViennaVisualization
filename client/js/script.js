@@ -3,32 +3,66 @@ function loadData(){
 }
 
 function loadMapOfVienna(){
-
-    var svg = d3.select("svg"),
+    let svg = d3.select("svg"),
         width = +svg.attr("width"),
-        height = +svg.attr("height");
+        height = +svg.attr("height"),
+        centered;
 
-    // Projection
-    var projection = d3.geoMercator()
-        .scale(80000) //.scale(40000)
-        .center([16.373819, 48.208174])
-        .translate([ width/2, height/2 ]);
+    d3.json("./data/oesterreich.json").then(function(data){
+        let projection = d3.geoMercator().fitSize([width, height], data);
 
-    d3.json("./data/bezirksgrenzen.json").then(function(data){
-        console.log(data);
+        let path = d3.geoPath().projection(projection);
 
-        // Draw the map
-        svg.selectAll("path")
+        svg.append("g")
+            .selectAll("path")
             .data(data.features)
-            .enter()
-            .append("path")
-            .attr("fill", "grey")
-            .attr("d", d3.geoPath()
-                .projection(projection)
-            )
-            .attr('fill', 'none')
-            .attr('stroke', '#999999')
-            .attr('stroke-width', '0.5')
+            .join("path")
+            .attr("fill", "green")
+            .attr("d", path)
+            .attr("stroke-width", 10)
+            .on("click",  clicked);
+
+        svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "white")
+            .attr("stroke-width", 1.5)
+            .attr("stroke-linejoin", "round")
+            .attr("d", path);
+
+        function clicked(d) {
+            centered = centered !== d && d;
+            if(!centered) {
+                d = data;
+            }
+
+            let paths = svg.selectAll("path")
+                .classed("active", d => d === centered);
+
+            // Starting translate/scale
+            let t0 = projection.translate(),
+                s0 = projection.scale();
+
+            // Re-fit to destination
+            projection.fitSize([width, height], centered || d);
+
+            // Create interpolators
+            let interpolateTranslate = d3.interpolate(t0, projection.translate()),
+                interpolateScale = d3.interpolate(s0, projection.scale());
+
+            let interpolator = function(t) {
+                projection.scale(interpolateScale(t))
+                    .translate(interpolateTranslate(t));
+                paths.attr("d", path);
+            };
+
+            d3.transition()
+                .duration(750)
+                .tween("projection", function() {
+                    return interpolator;
+                });
+        }
+
     });
 }
 
