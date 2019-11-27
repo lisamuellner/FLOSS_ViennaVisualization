@@ -3,10 +3,24 @@ function loadData(){
 }
 
 function loadMapOfVienna(){
+
+    let width = 1000,
+        height = 500,
+        centered,
+        currentName;
+
+    const svg = d3.select("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("viewBox", "0 0 1000 500");
+
+    /*
     let svg = d3.select("svg"),
         width = +svg.attr("width"),
         height = +svg.attr("height"),
         centered;
+
+     */
 
     d3.json("./data/oesterreich.json").then(function(data){
         let projection = d3.geoMercator().fitSize([width, height], data);
@@ -20,7 +34,9 @@ function loadMapOfVienna(){
             .attr("fill", "green")
             .attr("d", path)
             .attr("stroke-width", 10)
-            .on("click",  clicked);
+            .on("click",  clicked)
+            .append("title")
+                .text(d => d.properties.name);
 
         svg.append("path")
             .datum(data)
@@ -30,10 +46,19 @@ function loadMapOfVienna(){
             .attr("stroke-linejoin", "round")
             .attr("d", path);
 
+
+
         function clicked(d) {
+
             centered = centered !== d && d;
             if(!centered) {
                 d = data;
+                currentName = 'none';
+                console.log(currentName);
+
+            } else {
+                currentName = d.properties.name;
+                console.log(currentName);
             }
 
             let paths = svg.selectAll("path")

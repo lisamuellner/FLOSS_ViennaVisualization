@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>FLOSS - Visualization of Vienna</title>
 
     <link rel="stylesheet" type="text/css" href="css/style.css">
@@ -14,17 +15,17 @@
 </head>
 <body onLoad="loadData()">
 <header>
-    <h2>Vienna Visualization</h2>
+    <h1>Vienna Visualization</h1>
 </header>
 
-<section>
-    <nav>
-
+<div class="row">
+    <div class="side">
+        <h2>Options</h2>
         <ul>
             <li>
                 <label>
-                <input type="checkbox" name="checkbox1" value="checkbox1">
-                Checkbox1
+                    <input type="checkbox" name="checkbox1" value="checkbox1">
+                    Checkbox1
                 </label>
             </li>
             <li>
@@ -35,25 +36,26 @@
             </li>
             <li>
                 <label>
-                <input type="checkbox" name="checkbox3" value="checkbox3">
-                Checkbox3
+                    <input type="checkbox" name="checkbox3" value="checkbox3">
+                    Checkbox3
                 </label>
             </li>
         </ul>
-    </nav>
+    </div>
 
-    <article>
-        <svg id="mapOfVienna" width="500" height="500"></svg>
+    <div class="main">
+        <svg id="mapOfVienna"></svg>
         <div class="slidecontainer">
             <p>Time slider:</p>
             <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
         </div>
-    </article>
+    </div>
 
-    <article>
+    <div class="charts">
+       <p>temp</p>
+    </div>
 
-    </article>
-</section>
+</div>
 
 <footer>
     <p>Footer</p>
