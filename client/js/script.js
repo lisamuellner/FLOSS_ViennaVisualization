@@ -35,6 +35,8 @@ function loadMapOfVienna(){
             .attr("d", path)
             .attr("stroke-width", 10)
             .on("click",  clicked)
+            .on("mouseover", highlight)
+            .on("mouseout", unhighlight)
             .append("title")
                 .text(d => d.properties.name);
 
@@ -88,6 +90,18 @@ function loadMapOfVienna(){
                 });
         }
 
+
+        function highlight(d) {
+            d3.select(this)
+                .transition()//Set transition
+                .style('fill', 'red');
+        }
+
+        function unhighlight(d) {
+            d3.select(this)
+                .transition()//Set transition
+                .style('fill', 'green');
+        }
     });
 }
 
