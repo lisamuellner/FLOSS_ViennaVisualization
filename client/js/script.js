@@ -14,7 +14,7 @@ function loadMapOfVienna(){
         .center([16.373819, 48.208174])
         .translate([ width/2, height/2 ]);
 
-    d3.json("./data/bezirksgrenzen.json").then(function(data){
+    d3.json("http://localhost:3000/map").then(function(data){
         console.log(data);
 
         // Draw the map
