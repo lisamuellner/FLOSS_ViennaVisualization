@@ -52,15 +52,19 @@ function loadMapOfVienna(){
 
 
         function clicked(d) {
-
             centered = centered !== d && d;
-            if(!centered) {
+
+            if(centered) {
+                // dont know why this does not work with unhighlight method
+                d3.select(this)
+                    .transition()//Set transition
+                    .style('fill', 'green');
+
+                currentName = d.properties.name;
+                console.log(currentName);
+            } else {
                 d = data;
                 currentName = 'none';
-                console.log(currentName);
-
-            } else {
-                currentName = d.properties.name;
                 console.log(currentName);
             }
 
@@ -90,10 +94,13 @@ function loadMapOfVienna(){
                 .tween("projection", function() {
                     return interpolator;
                 });
+
         }
 
 
         function highlight(d) {
+            if(centered === d) { return; }
+
             d3.select(this)
                 .transition()//Set transition
                 .style('fill', 'red');
