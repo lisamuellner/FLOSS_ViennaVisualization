@@ -2,6 +2,10 @@
     box-sizing: border-box;
 }
 
+ul {
+    list-style-type: none;
+}
+
 svg {
     width: 100%;
     height: auto;
@@ -31,14 +35,14 @@ header {
 /* Create two unequal columns that sits next to each other */
 /* Sidebar/left column */
 .side {
-    flex: 10%;
+    flex-basis: 200px;
     background-color: #f1f1f1;
-    padding: 20px;
+    padding: 10px;
 }
 
 /* Main column */
 .main {
-    flex: 60%;
+    flex: 70%;
     background-color: white;
     padding: 20px;
 }
