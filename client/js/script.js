@@ -5,26 +5,32 @@ function loadData(){
 
 function loadMapOfVienna(){
 
-    let width = 1000,
-        height = 500,
-        centered,
-        currentName;
+    let widthMap = 1000,
+        heightMap = 500,
+        centeredMap,
+        clickedAreaName,
+        highlighted;
 
-    const svg = d3.select("#mapOfVienna")
-        .attr("width", width)
-        .attr("height", height)
+    const svgMap = d3.select("#mapOfVienna")
+        .attr("width", widthMap)
+        .attr("height", heightMap)
         .attr("viewBox", "0 0 1000 500");
 
-    /*
+
     let svg = d3.select("svg"),
         width = +svg.attr("width"),
         height = +svg.attr("height"),
         centered;
 
-     */
+
 
     d3.json("./data/oesterreich.json").then(function(data){
         let projection = d3.geoMercator().fitSize([width, height], data);
+            // Code for the broken vienna map
+            /*.scale(80000)
+            .center([16.373819, 48.208174])
+            .translate([ width/2, height/2 ]);*/
+
 
         let path = d3.geoPath().projection(projection);
 
@@ -36,8 +42,8 @@ function loadMapOfVienna(){
             .attr("d", path)
             .attr("stroke-width", 10)
             .on("click",  clicked)
-            .on("mouseover", highlight)
-            .on("mouseout", unhighlight)
+            //.on("mouseover", highlight)
+            //.on("mouseout", unhighlight)
             .append("title")
                 .text(d => d.properties.name);
 
@@ -49,24 +55,24 @@ function loadMapOfVienna(){
             .attr("stroke-linejoin", "round")
             .attr("d", path);
 
-
-
         function clicked(d) {
-            centered = centered !== d && d;
 
-            if(centered) {
-                // dont know why this does not work with unhighlight method
+            // FOR COLORING OF THE SELECTED AREA --------------------------------------
+            clickedAreaName = d.properties.name;
+            console.log(clickedAreaName); // debug output
+            if (clickedAreaName != highlighted) {
                 d3.select(this)
                     .transition()//Set transition
+                    .style('fill', 'red');
+                d3.select(highlighted)
+                    .transition()//Set transition
                     .style('fill', 'green');
-
-                currentName = d.properties.name;
-                console.log(currentName);
-            } else {
-                d = data;
-                currentName = 'none';
-                console.log(currentName);
             }
+            highlighted = this;
+
+
+            // CODE FOR ZOOM ---------------------------------------------------------
+            centered = centered !== d && d;
 
             let paths = svg.selectAll("path")
                 .classed("active", d => d === centered);
@@ -76,7 +82,7 @@ function loadMapOfVienna(){
                 s0 = projection.scale();
 
             // Re-fit to destination
-            projection.fitSize([width, height], centered || d);
+            projection.fitSize([width, height], centered || data);
 
             // Create interpolators
             let interpolateTranslate = d3.interpolate(t0, projection.translate()),
@@ -90,7 +96,7 @@ function loadMapOfVienna(){
 
             // TODO: fix the performance issues, then change duration time back to 750
             d3.transition()
-                .duration(0)
+                .duration(750)
                 .tween("projection", function() {
                     return interpolator;
                 });
@@ -106,51 +112,52 @@ function loadMapOfVienna(){
                 .style('fill', 'red');
         }
 
-        function unhighlight(d) {
+        function unhighlight() {
             d3.select(this)
                 .transition()//Set transition
                 .style('fill', 'green');
         }
     });
+
 }
 
 function loadCharts() {
-    /*
+
     // set the dimensions and margins of the graph
-    var margin = {top: 10, right: 30, bottom: 30, left: 60},
-        width = 460 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    let margin = {top: 10, right: 30, bottom: 30, left: 60},
+        widthChart = 260 - margin.left - margin.right,
+        heightChart = 200 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
-    var svg = d3.select("#chart1")
+    let svgChart = d3.select("#chart1")
         .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("width", widthChart + margin.left + margin.right)
+        .attr("height", heightChart + margin.top + margin.bottom)
         .append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
 
     //Read the data
-    d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/2_TwoNum.csv", function(data) {
+    d3.csv("./data/testData.csv").then(function(data){
 
         // Add X axis
-        var x = d3.scaleLinear()
+        let x = d3.scaleLinear()
             .domain([0, 4000])
-            .range([ 0, width ]);
-        svg.append("g")
-            .attr("transform", "translate(0," + height + ")")
+            .range([ 0, widthChart ]);
+        svgChart.append("g")
+            .attr("transform", "translate(0," + heightChart + ")")
             .call(d3.axisBottom(x));
 
         // Add Y axis
-        var y = d3.scaleLinear()
+        let y = d3.scaleLinear()
             .domain([0, 500000])
-            .range([ height, 0]);
-        svg.append("g")
+            .range([ heightChart, 0]);
+        svgChart.append("g")
             .call(d3.axisLeft(y));
 
         // Add dots
-        svg.append('g')
+        svgChart.append('g')
             .selectAll("dot")
             .data(data)
             .enter()
@@ -158,8 +165,7 @@ function loadCharts() {
             .attr("cx", function (d) { return x(d.GrLivArea); } )
             .attr("cy", function (d) { return y(d.SalePrice); } )
             .attr("r", 1.5)
-            .style("fill", "#69b3a2")
-
-    })*/
+            .style("fill", "#69b3a2");
+        })
 }
 
