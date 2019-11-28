@@ -1,4 +1,4 @@
-var mapData = require('./data/bezirksgrenzen.json');
+var mapData = require('./data/oesterreich.json');
 
 class MapEndpoint {
 

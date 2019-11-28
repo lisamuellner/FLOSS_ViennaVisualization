@@ -24,7 +24,7 @@ function loadMapOfVienna(){
         centered;
 
     // loading the data
-    d3.json("./data/oesterreich.json").then(function(data){
+    d3.json("http://localhost:3000/map").then(function(data){
         let projection = d3.geoMercator().fitSize([width, height], data);
         let path = d3.geoPath().projection(projection);
 
