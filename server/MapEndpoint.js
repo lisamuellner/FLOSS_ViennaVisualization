@@ -1,4 +1,4 @@
-var mapData = require('./data/oesterreich.json');
+var mapData = require('./data/oesterreich-topo.json');
 
 class MapEndpoint {
 
