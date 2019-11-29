@@ -18,7 +18,7 @@ function loadMapOfVienna(){
 
     // loading the data
     d3.json("http://localhost:3000/map").then(function(data){
-        var newData = topojson.feature(data, data.objects.aut);
+        var newData = topojson.feature(data, data.objects.bezirke_wien_gross);
 
         let projection = d3.geoMercator().fitSize([width, height], newData);
 
