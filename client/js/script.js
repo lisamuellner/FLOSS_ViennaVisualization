@@ -17,14 +17,17 @@ function loadMapOfVienna(){
         .attr("viewBox", "0 0 1000 500");
 
     // loading the data
-    d3.json("./data/oesterreich.json").then(function(data){
-        let projection = d3.geoMercator().fitSize([width, height], data);
-        let path = d3.geoPath().projection(projection);
+    d3.json("http://localhost:3000/map").then(function(data){
+        var newData = topojson.feature(data, data.objects.aut);
 
+        let projection = d3.geoMercator().fitSize([width, height], newData);
+
+        let path = d3.geoPath().projection(projection);
+        
         // For the areas
         svg.append("g")
             .selectAll("path")
-            .data(data.features)
+            .data(newData.features)
             .join("path")
             .attr("fill", "green")
             .attr("d", path)
@@ -37,7 +40,7 @@ function loadMapOfVienna(){
 
         // For the lines between the areas
         svg.append("path")
-            .datum(data)
+            .datum(newData)
             .attr("fill", "none")
             .attr("stroke", "white")
             .attr("stroke-width", 1.5)
@@ -52,15 +55,15 @@ function loadMapOfVienna(){
             console.log(clickedAreaName); // debug output
             if (selectedArea != highlighted) {
                 d3.select(this)
-                    .transition()// TODO: Set transition
+                    .transition(500)// TODO: Set transition
                     .style('fill', '#69b3a2');
                 d3.select(highlighted)
-                    .transition()// TODO: Set transition
+                    .transition(500)// TODO: Set transition
                     .style('fill', 'green');
                 highlighted = this;
             } else {
                 d3.select(this)
-                    .transition()// TODO: Set transition
+                    .transition(500)// TODO: Set transition
                     .style('fill', 'green');
                 highlighted = null;
             }
@@ -76,7 +79,7 @@ function loadMapOfVienna(){
                 s0 = projection.scale();
 
             // Re-fit to destination
-            projection.fitSize([width, height], centered || data);
+            projection.fitSize([width, height], centered || newData);
 
             // Create interpolators
             let interpolateTranslate = d3.interpolate(t0, projection.translate()),
@@ -90,7 +93,7 @@ function loadMapOfVienna(){
 
             // TODO: fix the performance issues, then change duration time back to 750
             d3.transition()
-                .duration(0)
+                .duration(750)
                 .tween("projection", function() {
                     return interpolator;
                 });
