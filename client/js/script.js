@@ -6,22 +6,15 @@ function loadData(){
 
 function loadMapOfVienna(){
 
-    let widthMap = 1000,
-        heightMap = 500,
+    let width = 1000,
+        height = 500,
         clickedAreaName,
-        highlighted;
-
-    // setting up map area
-    const svgMap = d3.select("#mapOfVienna")
-        .attr("width", widthMap)
-        .attr("height", heightMap)
-        .attr("viewBox", "0 0 1000 500");
-
-    // setting up svg
-    let svg = d3.select("svg"),
-        width = +svg.attr("width"),
-        height = +svg.attr("height"),
+        highlighted,
         centered;
+
+    // setting up map dimensions
+    let svg = d3.select("#mapOfVienna")
+        .attr("viewBox", "0 0 1000 500");
 
     // loading the data
     d3.json("./data/oesterreich.json").then(function(data){
