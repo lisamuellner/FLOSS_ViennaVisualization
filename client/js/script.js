@@ -6,7 +6,7 @@ function loadData(){
 
 function loadMapOfVienna(){
 
-    let width = 1000,
+    let width = 700,
         height = 500,
         clickedAreaName,
         highlighted,
@@ -14,7 +14,7 @@ function loadMapOfVienna(){
 
     // setting up map dimensions
     let svg = d3.select("#mapOfVienna")
-        .attr("viewBox", "0 0 1000 500");
+        .attr("viewBox", "0 0 700 500");
 
     // loading the data
     d3.json("http://localhost:3000/map").then(function(data){
@@ -54,6 +54,7 @@ function loadMapOfVienna(){
             var selectedArea = this;
             console.log(clickedAreaName); // debug output
             if (selectedArea != highlighted) {
+                document.getElementById("selectedDistrictLabel").innerHTML = clickedAreaName;
                 d3.select(this)
                     .transition(500)// TODO: Set transition
                     .style('fill', '#69b3a2');
@@ -62,6 +63,7 @@ function loadMapOfVienna(){
                     .style('fill', 'green');
                 highlighted = this;
             } else {
+                document.getElementById("selectedDistrictLabel").innerHTML = "Vienna";
                 d3.select(this)
                     .transition(500)// TODO: Set transition
                     .style('fill', 'green');
@@ -91,7 +93,6 @@ function loadMapOfVienna(){
                 paths.attr("d", path);
             };
 
-            // TODO: fix the performance issues, then change duration time back to 750
             d3.transition()
                 .duration(750)
                 .tween("projection", function() {
@@ -212,4 +213,3 @@ function loadChart2 () {
             .attr("fill", "#69b3a2");
     })
 }
-

@@ -4,13 +4,13 @@
 
 ul {
     list-style-type: none;
+    padding-inline-start: 5px;
+
 }
 
 svg {
     width: 100%;
     height: auto;
-    border: 1px solid silver;
-    background: #E6E6E6;
 }
 
 body {
@@ -20,46 +20,66 @@ body {
 
 /* Header/logo Title */
 header {
-    padding: 60px;
     text-align: center;
     background: darkgray;
     color: white;
+    padding: 5px;
+    margin-bottom: 5px;
 }
 
 /* Column container */
 .row {
+    width: 90%;
+    margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
+    padding-top: 20px;
 }
 
 /* Create two unequal columns that sits next to each other */
 /* Sidebar/left column */
 .side {
-    flex-basis: 200px;
-    background-color: #f1f1f1;
-    padding: 10px;
+    margin-right: 20px;
 }
 
-/* Main column */
+/* Map column */
 .main {
-    flex: 70%;
-    background-color: white;
     padding: 20px;
+    width: 40%;
 }
 
-/* Charts column */
-.main {
-    flex: 30%;
-    background-color: grey;
-    padding: 20px;
+.charts{
+    margin-top: 50px;
+    margin-left: 20px;
+    display: flex;
+    flex-flow: column;
 }
 
+#firstRowCharts{
+    display: flex;
+    flex-flow: row;
+}
+#secondRowCharts{
+    display: flex;
+    flex-flow: row;
+    justify-content: space-evenly;
+}
+
+.placeholder{
+    height: 100px;
+    margin: 0 auto;
+    padding-top: 50px;
+}
 
 /* Footer */
-.footer {
-    padding: 20px;
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     text-align: center;
     background: #ddd;
+    padding: 10px;
 }
 
 
@@ -69,8 +89,9 @@ header {
 
 .slider {
     -webkit-appearance: none;
-    flex: 100%;
-    height: 25px;
+    align-self: center;
+    width: 80%;
+    height: 15px;
     background: #d3d3d3;
     outline: none;
     opacity: 0.7;
@@ -85,15 +106,15 @@ header {
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 25px;
-    height: 25px;
+    width: 15px;
+    height: 15px;
     background: #4CAF50;
     cursor: pointer;
 }
 
 .slider::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
+    width: 15px;
+    height: 15px;
     background: #4CAF50;
     cursor: pointer;
 }
