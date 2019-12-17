@@ -18,7 +18,7 @@ function loadMapOfVienna(){
 
     // loading the data
     d3.json("http://localhost:3000/map").then(function(data){
-        var newData = topojson.feature(data, data.objects.bezirke_wien_gross);
+        var newData = topojson.feature(data, data.objects.bezirksgrenzen);
 
         let projection = d3.geoMercator().fitSize([width, height], newData);
 
@@ -50,7 +50,7 @@ function loadMapOfVienna(){
         function clicked(d) {
 
             // FOR COLORING OF THE SELECTED AREA --------------------------------------
-            clickedAreaName = d.properties.name;
+            clickedAreaName = d.properties.NAMEK;
             var selectedArea = this;
             console.log(clickedAreaName); // debug output
             if (selectedArea != highlighted) {

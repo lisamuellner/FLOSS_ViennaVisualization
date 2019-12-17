@@ -1,4 +1,4 @@
-var mapData = require('./data/wien-topo.json');
+var mapData = require('./data/bezirksgrenzen_topo.json');
 
 class MapEndpoint {
 
