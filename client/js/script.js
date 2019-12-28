@@ -58,15 +58,15 @@ function onCheckboxChange(clickedElement){
 
 function loadMapOfVienna(){
 
-    let width = 700,
-        height = 500,
+    let width = 600,
+        height = 400,
         clickedAreaName,
         highlighted,
         centered;
 
     // setting up map dimensions
     let svg = d3.select("#mapOfVienna")
-        .attr("viewBox", "0 0 700 500");
+        .attr("viewBox", "0 0 600 400");
 
     // loading the data
     d3.json("http://localhost:3000/map").then(function(data){

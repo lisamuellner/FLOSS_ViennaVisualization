@@ -34,6 +34,7 @@ header {
     display: flex;
     flex-wrap: wrap;
     padding-top: 20px;
+    justify-content: space-evenly;
 }
 
 /* Create two unequal columns that sits next to each other */
@@ -50,7 +51,7 @@ header {
 /* Map column */
 .main {
     padding: 20px;
-    width: 40%;
+    width: 30%;
 }
 
 .charts{
