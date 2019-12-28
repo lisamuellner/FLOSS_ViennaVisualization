@@ -42,6 +42,11 @@ header {
     margin-right: 20px;
 }
 
+#checkboxContainer{
+    display: flex; 
+    flex-flow: column;
+}
+
 /* Map column */
 .main {
     padding: 20px;

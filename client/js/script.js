@@ -1,7 +1,40 @@
+var chartData; 
+
 function loadData(){
+    loadDataForCharts();
     loadMapOfVienna();
+}
+
+async function loadDataForCharts(){
+    var response = await fetch("http://localhost:3000/data");
+    chartData = await response.json();
+    console.log(chartData);
+    //data loading complete - chartData is from here on available!
+    fillCheckboxes();
     loadChart1();
     loadChart2();
+}
+
+function fillCheckboxes(){
+    var dataLabels = Object.entries(chartData[0]);
+    let checkboxHtml = "";
+    for(let i = 2; i < dataLabels.length-2; i++){
+        checkboxHtml += '<label><input type="checkbox" name="' + dataLabels[i][1] + '" value="' + dataLabels[i][0] + '" onclick="onCheckboxChange(this);">' + dataLabels[i][1] + '</label>';
+    }
+    document.getElementById("checkboxContainer").innerHTML = checkboxHtml;
+    //remove first element from array which is only labeling information 
+    chartData.shift(); 
+}
+
+function onCheckboxChange(clickedElement){
+    console.log(clickedElement);
+    if(clickedElement.checked){
+        //todo: element is checked --> show data
+        console.log("checked"); 
+    }else{
+        //todo: element is not checked --> hide data
+        console.log("unchecked");
+    }
 }
 
 function loadMapOfVienna(){
