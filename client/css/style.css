@@ -29,7 +29,7 @@ header {
 
 /* Column container */
 .row {
-    width: 90%;
+    width: 95%;
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
@@ -90,6 +90,12 @@ footer {
 
 .slidecontainer {
     display: flex;
+    flex-flow: column;
+}
+
+#sliderWithLabels{
+    display:flex; 
+    flex-flow: row;
 }
 
 .slider {

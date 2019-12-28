@@ -11,6 +11,7 @@ async function loadDataForCharts(){
     console.log(chartData);
     //data loading complete - chartData is from here on available!
     fillCheckboxes();
+    adaptSliderRangeToData();
     loadChart1();
     loadChart2();
 }
@@ -24,6 +25,24 @@ function fillCheckboxes(){
     document.getElementById("checkboxContainer").innerHTML = checkboxHtml;
     //remove first element from array which is only labeling information 
     chartData.shift(); 
+}
+
+function adaptSliderRangeToData(){
+    let minYear = chartData[0].REF_YEAR; 
+    let maxYear = chartData[chartData.length-1].REF_YEAR;
+    document.getElementById("yearSlider").min = minYear; 
+    document.getElementById("yearSlider").max = maxYear; 
+    document.getElementById("yearSlider").value = maxYear; 
+    document.getElementById("minYearSlider").innerHTML = minYear; 
+    document.getElementById("maxYearSlider").innerHTML = maxYear;
+    document.getElementById("selectedYear").innerHTML = maxYear;
+}
+
+function onSliderChange(sliderElement){
+    let selectedYear = sliderElement.value;
+    document.getElementById("selectedYear").innerHTML = selectedYear;
+    //todo: change data of visualizations to currently selected year 
+
 }
 
 function onCheckboxChange(clickedElement){

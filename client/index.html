@@ -30,8 +30,12 @@
         <p id="selectedDistrictLabel">Vienna</p>
         <svg id="mapOfVienna"></svg>
         <div class="slidecontainer">
-            <p>Time slider:</p>
-            <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+            <p>Selected year: <span id="selectedYear"></span></p>
+            <div id="sliderWithLabels">
+                <span id="minYearSlider"></span>
+                <input type="range" min="1" max="100" value="50" class="slider" id="yearSlider" onclick="onSliderChange(this)">
+                <span id="maxYearSlider"></span>
+            </div>
         </div>
     </div>
 
