@@ -1,4 +1,8 @@
 var chartData; 
+var selectedYear; 
+var selectedDistrict = 0; 
+var selectedDataSets = []; 
+var labels; 
 
 function loadData(){
     loadDataForCharts();
@@ -13,18 +17,24 @@ async function loadDataForCharts(){
     fillCheckboxes();
     adaptSliderRangeToData();
     loadChart1();
-    loadChart2();
+    updateBarChart(true);
 }
 
 function fillCheckboxes(){
     var dataLabels = Object.entries(chartData[0]);
     let checkboxHtml = "";
     for(let i = 2; i < dataLabels.length-2; i++){
-        checkboxHtml += '<label><input type="checkbox" name="' + dataLabels[i][1] + '" value="' + dataLabels[i][0] + '" onclick="onCheckboxChange(this);">' + dataLabels[i][1] + '</label>';
+        if(i <= 3){
+            //preselect first two checkboxes
+            checkboxHtml += '<label><input type="checkbox" checked name="' + dataLabels[i][1] + '" value="' + dataLabels[i][0] + '" onclick="onCheckboxChange(this);">' + dataLabels[i][1] + '</label>';
+            selectedDataSets.push(dataLabels[i][0]);
+        }else{
+            checkboxHtml += '<label><input type="checkbox" name="' + dataLabels[i][1] + '" value="' + dataLabels[i][0] + '" onclick="onCheckboxChange(this);">' + dataLabels[i][1] + '</label>';
+        }
     }
     document.getElementById("checkboxContainer").innerHTML = checkboxHtml;
     //remove first element from array which is only labeling information 
-    chartData.shift(); 
+    labels = chartData.shift(); 
 }
 
 function adaptSliderRangeToData(){
@@ -36,37 +46,37 @@ function adaptSliderRangeToData(){
     document.getElementById("minYearSlider").innerHTML = minYear; 
     document.getElementById("maxYearSlider").innerHTML = maxYear;
     document.getElementById("selectedYear").innerHTML = maxYear;
+    selectedYear = maxYear;
 }
 
 function onSliderChange(sliderElement){
-    let selectedYear = sliderElement.value;
+    selectedYear = sliderElement.value;
     document.getElementById("selectedYear").innerHTML = selectedYear;
+    updateBarChart(false);
     //todo: change data of visualizations to currently selected year 
-
 }
 
 function onCheckboxChange(clickedElement){
-    console.log(clickedElement);
-    if(clickedElement.checked){
-        //todo: element is checked --> show data
-        console.log("checked"); 
-    }else{
-        //todo: element is not checked --> hide data
-        console.log("unchecked");
+    selectedDataSets = [];
+    let selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked');
+    for (var i = 0; i < selectedCheckBoxes.length; i++) {
+        selectedDataSets.push(selectedCheckBoxes[i].value)
     }
+    
+    updateBarChart(false);
 }
 
 function loadMapOfVienna(){
 
-    let width = 600,
-        height = 400,
+    let width = 400,
+        height = 300,
         clickedAreaName,
         highlighted,
         centered;
 
     // setting up map dimensions
     let svg = d3.select("#mapOfVienna")
-        .attr("viewBox", "0 0 600 400");
+        .attr("viewBox", "0 0 400 300");
 
     // loading the data
     d3.json("http://localhost:3000/map").then(function(data){
@@ -104,8 +114,8 @@ function loadMapOfVienna(){
             // FOR COLORING OF THE SELECTED AREA --------------------------------------
             clickedAreaName = d.properties.NAMEK;
             var selectedArea = this;
-            console.log(clickedAreaName); // debug output
             if (selectedArea != highlighted) {
+                selectedDistrict = d.properties.BEZNR;
                 document.getElementById("selectedDistrictLabel").innerHTML = clickedAreaName;
                 d3.select(this)
                     .transition(500)// TODO: Set transition
@@ -115,6 +125,8 @@ function loadMapOfVienna(){
                     .style('fill', 'green');
                 highlighted = this;
             } else {
+                //selectedDistrict = 0 --> no district selected
+                selectedDistrict = 0;
                 document.getElementById("selectedDistrictLabel").innerHTML = "Vienna";
                 d3.select(this)
                     .transition(500)// TODO: Set transition
@@ -150,6 +162,9 @@ function loadMapOfVienna(){
                 .tween("projection", function() {
                     return interpolator;
                 });
+            
+            updateBarChart(false);
+
         }
 
         // highlight clicked area (currently unused)
@@ -216,52 +231,117 @@ function loadChart1() {
         })
 }
 
-function loadChart2 () {
+function loadBarChart (data, firstRender) {
+
+    if(!firstRender){
+        document.querySelector("#chart2 > svg").remove();
+    }
     // set the dimensions and margins of the graph
     var margin = {top: 30, right: 30, bottom: 70, left: 60},
-        width = 260 - margin.left - margin.right,
-        height = 200 - margin.top - margin.bottom;
+    width = 350 - margin.left - margin.right,
+    height = 250 - margin.top - margin.bottom;
 
-    // append the svg object to the body of the page
-    var svg = d3.select("#chart2")
+    let svg = d3.select("#chart2")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
+        .attr("height", height + margin.top + margin.bottom);
+        
+    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+   
+    // X axis
+    var x = d3.scaleBand()
+        .rangeRound([0, width])
+        .padding(0.5);
+    
+    var y = d3.scaleLinear()
+        .rangeRound([height, 0]);
 
-    // Parse the Data
-    d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/7_OneCatOneNum_header.csv").then(function(data) {
+    x.domain(data.map(function (d) {
+		return d.x;
+	}));
+        
+    y.domain([0, d3.max(data, function (d) {
+		return Number(d.y);
+	})]);
 
-        // X axis
-        var x = d3.scaleBand()
-            .range([ 0, width ])
-            .domain(data.map(function(d) { return d.Country; }))
-            .padding(0.2);
-        svg.append("g")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(x))
-            .selectAll("text")
-            .attr("transform", "translate(-10,0)rotate(-45)")
-            .style("text-anchor", "end");
+    //todo: labels are not visible as a whole
+    g.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+    .attr("y", 0)
+    .attr("x", 9)
+    .attr("dy", ".35em")
+    .attr("transform", "rotate(90)")
+    .style("text-anchor", "start");
+        
+    g.append("g")
+        .call(d3.axisLeft(y))
+            
+    g.selectAll(".bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function (d) {
+            return x(d.x);
+        })
+        .attr("y", function (d) {
+            return y((d.y));
+        })
+        .attr("width", x.bandwidth())
+        .attr("height", function (d) {
+            return height - y(d.y);
+        });
+        
+    //create labels on top of bars that display actual value
+    g.selectAll(".label")        
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("class", "label")
+        .style("display",  d => { return d.y === null ? "none" : null; })
+        .style("font-size", "10px")
+        .attr("x", ( d => { return x(d.x) + (x.bandwidth() / 2) -10 ; }))
+        .style("fill", '#000')
+        .attr("y",  d => { return height; })
+        .text( d => { return d.y; })
+        .attr("y",  d => { return y(d.y) + .1; })
+        .attr("dy", "-.7em"); 
+}
 
-        // Add Y axis
-        var y = d3.scaleLinear()
-            .domain([0, 13000])
-            .range([ height, 0]);
-        svg.append("g")
-            .call(d3.axisLeft(y));
+function updateBarChart(firstRender){
+    let districtCode; 
+    let finalDataForChart = [];
+    if(selectedDistrict == 0){
+        //special case, whole Vienna is selected --> sum data from all districts
+        let dataOfAllDistricts =  chartData.filter(function(row) {
+            return (row.REF_YEAR == selectedYear);
+        });
+        for(let i = 0; i < selectedDataSets.length; i++){
+            let newEntry = {}; 
+            //newEntry.x = labels[selectedDataSets[i]];
+            newEntry.x = selectedDataSets[i];
+            let currentSum = 0; 
+            for(let j = 0; j < dataOfAllDistricts.length; j++){
+                currentSum += Number(dataOfAllDistricts[j][selectedDataSets[i]]);
+            }
+            newEntry.y = currentSum;
+            finalDataForChart.push(newEntry);
+        }
+    }else{
+        districtCode = parseInt(("9" + selectedDistrict + "00"));
+        let dataOfDistrict =  chartData.filter(function(row) {
+            return (row.DISTRICT_CODE == districtCode && row.REF_YEAR == selectedYear);
+        });
+        for(let i = 0; i < selectedDataSets.length; i++){
+            let newEntry = {}; 
+            //newEntry.x = labels[selectedDataSets[i]];
+            newEntry.x = selectedDataSets[i];
+            newEntry.y = dataOfDistrict[0][selectedDataSets[i]];
+            finalDataForChart.push(newEntry); 
+        }
+        console.log(finalDataForChart);
+    }
+    loadBarChart(finalDataForChart, firstRender);
 
-        // Bars
-        svg.selectAll("mybar")
-            .data(data)
-            .enter()
-            .append("rect")
-            .attr("x", function(d) { return x(d.Country); })
-            .attr("y", function(d) { return y(d.Value); })
-            .attr("width", x.bandwidth())
-            .attr("height", function(d) { return height - y(d.Value); })
-            .attr("fill", "#69b3a2");
-    })
 }
