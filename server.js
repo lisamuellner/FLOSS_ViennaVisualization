@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.get('/', function (req, res) {
-    res.send('Hello World!');
+    res.sendFile( __dirname + "/client/index.html");
 });
 
 app.get('/map', (req, res) => {
@@ -26,6 +26,10 @@ app.get('/map', (req, res) => {
 app.get('/data', (req, res) => {
     const data = dataEndpoint.getData();
     res.send(data);
+});
+
+app.get('/*', function (req, res) {
+    res.sendFile( __dirname + "/client/index.html");
 });
 
 
