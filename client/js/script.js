@@ -2,7 +2,10 @@ var chartData;
 var selectedYear; 
 var selectedDistrict = 0; 
 var selectedDataSets = []; 
-var labels; 
+var labels;
+
+var yearSpan = 1;
+var firstRunLine = true;
 
 function loadData(){
     loadDataForCharts();
@@ -16,7 +19,8 @@ async function loadDataForCharts(){
     //data loading complete - chartData is from here on available!
     fillCheckboxes();
     adaptSliderRangeToData();
-    loadChart1();
+    //loadChart1();
+    updateLineChart();
     updateBarChart(true);
 }
 
@@ -231,6 +235,59 @@ function loadChart1() {
         })
 }
 
+function loadLineChart (data) {
+    if(!firstRunLine){
+        document.querySelector("#chart1 > svg").remove();
+        firstRunLine = false;
+    }
+
+    // set the dimensions and margins of the graph
+    let margin = {top: 10, right: 30, bottom: 30, left: 60},
+        widthChart = 260 - margin.left - margin.right,
+        heightChart = 200 - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    let svgChart = d3.select("#chart1")
+        .append("svg")
+        .attr("width", widthChart + margin.left + margin.right)
+        .attr("height", heightChart + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    var nestedData = d3.nest()
+        .key(function(d) { return d.REF_YEAR; })
+        .entries(data);
+
+
+    // Add X axis
+    let x = d3.scaleLinear()
+        .domain([selectedYear -yearSpan, selectedYear +yearSpan])
+        .range([ 0, widthChart ]);
+    svgChart.append("g")
+        .attr("transform", "translate(0," + heightChart + ")")
+        .call(d3.axisBottom(x));
+
+    // Add Y axis
+    let y = d3.scaleLinear()
+        .domain([0, 500000])
+        .range([ heightChart, 0]);
+    svgChart.append("g")
+        .call(d3.axisLeft(y));
+
+    // Add dots
+    svgChart.append('g')
+        .selectAll("dot")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("cx", function (d) { return x(d.GrLivArea); } )
+        .attr("cy", function (d) { return y(d.SalePrice); } )
+        .attr("r", 1.5)
+        .style("fill", "#69b3a2");
+
+}
+
 function loadBarChart (data, firstRender) {
 
     if(!firstRender){
@@ -307,6 +364,43 @@ function loadBarChart (data, firstRender) {
         .text( d => { return d.y; })
         .attr("y",  d => { return y(d.y) + .1; })
         .attr("dy", "-.7em"); 
+}
+
+function updateLineChart (data) {
+    let districtCode;
+    let finalDataForChart = [];
+    if(selectedDistrict == 0){
+
+        //special case, whole Vienna is selected --> sum data from all districts
+        let dataOfAllDistricts =  chartData.filter(function(row) {
+            return (row.REF_YEAR >= selectedYear -yearSpan && row.REF_YEAR <= selectedYear +yearSpan);
+        });
+        for(let i = 0; i < selectedDataSets.length; i++){
+            let newEntry = {};
+            //newEntry.x = labels[selectedDataSets[i]];
+            newEntry.x = selectedDataSets[i];
+            let currentSum = 0;
+            for(let j = 0; j < dataOfAllDistricts.length; j++){
+                currentSum += Number(dataOfAllDistricts[j][selectedDataSets[i]]);
+            }
+            newEntry.y = currentSum;
+            finalDataForChart.push(newEntry);
+        }
+    }else{
+        districtCode = parseInt(("9" + selectedDistrict + "00"));
+        let dataOfDistrict =  chartData.filter(function(row) {
+            return (row.DISTRICT_CODE == districtCode && (row.REF_YEAR >= selectedYear -yearSpan && row.REF_YEAR <= selectedYear +yearSpan));
+        });
+        for(let i = 0; i < selectedDataSets.length; i++){
+            let newEntry = {};
+            //newEntry.x = labels[selectedDataSets[i]];
+            newEntry.x = selectedDataSets[i];
+            newEntry.y = dataOfDistrict[0][selectedDataSets[i]];
+            finalDataForChart.push(newEntry);
+        }
+        console.log(finalDataForChart);
+    }
+    loadLineChart(finalDataForChart);
 }
 
 function updateBarChart(firstRender){
