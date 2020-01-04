@@ -3,9 +3,10 @@ var selectedYear;
 var selectedDistrict = 0; 
 var selectedDataSets = []; 
 var labels;
-
-var yearSpan = 1;
+var minYear, maxYear;
+var yearSpan = 3;
 var firstRunLine = true;
+var firstRunBar = true;
 
 function loadData(){
     loadDataForCharts();
@@ -21,7 +22,7 @@ async function loadDataForCharts(){
     adaptSliderRangeToData();
     //loadChart1();
     updateLineChart();
-    updateBarChart(true);
+    updateBarChart();
 }
 
 function fillCheckboxes(){
@@ -42,8 +43,8 @@ function fillCheckboxes(){
 }
 
 function adaptSliderRangeToData(){
-    let minYear = chartData[0].REF_YEAR; 
-    let maxYear = chartData[chartData.length-1].REF_YEAR;
+    minYear = chartData[0].REF_YEAR; 
+    maxYear = chartData[chartData.length-1].REF_YEAR;
     document.getElementById("yearSlider").min = minYear; 
     document.getElementById("yearSlider").max = maxYear; 
     document.getElementById("yearSlider").value = maxYear; 
@@ -57,6 +58,7 @@ function onSliderChange(sliderElement){
     selectedYear = sliderElement.value;
     document.getElementById("selectedYear").innerHTML = selectedYear;
     updateBarChart(false);
+    updateLineChart();
     //todo: change data of visualizations to currently selected year 
 }
 
@@ -67,7 +69,8 @@ function onCheckboxChange(clickedElement){
         selectedDataSets.push(selectedCheckBoxes[i].value)
     }
     
-    updateBarChart(false);
+    updateBarChart();
+    updateLineChart();
 }
 
 function loadMapOfVienna(){
@@ -167,7 +170,8 @@ function loadMapOfVienna(){
                     return interpolator;
                 });
             
-            updateBarChart(false);
+            updateBarChart();
+            updateLineChart();
 
         }
 
@@ -238,61 +242,79 @@ function loadChart1() {
 function loadLineChart (data) {
     if(!firstRunLine){
         document.querySelector("#chart1 > svg").remove();
-        firstRunLine = false;
     }
-
+    firstRunLine = false;
+    console.log(data);
     // set the dimensions and margins of the graph
-    let margin = {top: 10, right: 30, bottom: 30, left: 60},
-        widthChart = 260 - margin.left - margin.right,
-        heightChart = 200 - margin.top - margin.bottom;
+    let margin = {top: 30, right: 30, bottom: 70, left: 60},
+    width = 350 - margin.left - margin.right,
+    height = 250 - margin.top - margin.bottom;
 
-    // append the svg object to the body of the page
-    let svgChart = d3.select("#chart1")
+    let svg = d3.select("#chart1")
         .append("svg")
-        .attr("width", widthChart + margin.left + margin.right)
-        .attr("height", heightChart + margin.top + margin.bottom)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
+              "translate(" + margin.left + "," + margin.top + ")");
 
-    var nestedData = d3.nest()
-        .key(function(d) { return d.REF_YEAR; })
-        .entries(data);
+    // set the ranges
+    var x = d3.scaleTime().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
 
-
-    // Add X axis
-    let x = d3.scaleLinear()
-        .domain([selectedYear -yearSpan, selectedYear +yearSpan])
-        .range([ 0, widthChart ]);
-    svgChart.append("g")
-        .attr("transform", "translate(0," + heightChart + ")")
+    let tmpMaxValueArray = data.map(entry => {
+        return selectedDataSets.map(property => {
+          if (entry.hasOwnProperty(property)) {
+            return entry[property]
+          }
+        })
+      })
+      .reduce((total, current) => {
+          return [
+            ...total,
+            ...current
+          ]
+        },
+        []);
+    let maxValue = Math.max(...tmpMaxValueArray);
+        
+    // Scale the range of the data
+    x.domain(d3.extent(data, function(d) { return d.REF_YEAR; }));
+    y.domain([0, maxValue]);
+    
+    // create valuelines and append them
+    let valueLines = [];
+    for(let i = 0; i < selectedDataSets.length; i++){
+        var tempValueline = d3.line()
+            .x(function(d) { return x(d.REF_YEAR); })
+            .y(function(d) { return y(d[selectedDataSets[i]]); });
+        valueLines.push(tempValueline);
+         // Add the valueline path.
+        svg.append("path")
+        .data([data])
+        .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 1.5)
+        .attr("class", "line")
+        .attr("d", tempValueline);
+    }
+     
+    // Add the X Axis
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x));
 
-    // Add Y axis
-    let y = d3.scaleLinear()
-        .domain([0, 500000])
-        .range([ heightChart, 0]);
-    svgChart.append("g")
+    // Add the Y Axis
+    svg.append("g")
         .call(d3.axisLeft(y));
-
-    // Add dots
-    svgChart.append('g')
-        .selectAll("dot")
-        .data(data)
-        .enter()
-        .append("circle")
-        .attr("cx", function (d) { return x(d.GrLivArea); } )
-        .attr("cy", function (d) { return y(d.SalePrice); } )
-        .attr("r", 1.5)
-        .style("fill", "#69b3a2");
-
 }
 
-function loadBarChart (data, firstRender) {
+function loadBarChart (data) {
 
-    if(!firstRender){
+    if(!firstRunBar){
         document.querySelector("#chart2 > svg").remove();
     }
+    firstRunBar = false;
     // set the dimensions and margins of the graph
     var margin = {top: 30, right: 30, bottom: 70, left: 60},
     width = 350 - margin.left - margin.right,
@@ -366,44 +388,48 @@ function loadBarChart (data, firstRender) {
         .attr("dy", "-.7em"); 
 }
 
-function updateLineChart (data) {
+function updateLineChart () {
     let districtCode;
     let finalDataForChart = [];
     if(selectedDistrict == 0){
-
         //special case, whole Vienna is selected --> sum data from all districts
-        let dataOfAllDistricts =  chartData.filter(function(row) {
-            return (row.REF_YEAR >= selectedYear -yearSpan && row.REF_YEAR <= selectedYear +yearSpan);
-        });
-        for(let i = 0; i < selectedDataSets.length; i++){
-            let newEntry = {};
-            //newEntry.x = labels[selectedDataSets[i]];
-            newEntry.x = selectedDataSets[i];
-            let currentSum = 0;
-            for(let j = 0; j < dataOfAllDistricts.length; j++){
-                currentSum += Number(dataOfAllDistricts[j][selectedDataSets[i]]);
+        let currentMinYear = Number(selectedYear) - yearSpan; 
+        let currentMaxYear = Number(selectedYear) + yearSpan
+        for(let i = currentMinYear; i <= currentMaxYear; i++){
+            //break loop if no data for current year is available
+            //case: currentYear is greater than maximum available year
+            if(i > maxYear){
+                break;
             }
-            newEntry.y = currentSum;
-            finalDataForChart.push(newEntry);
-        }
-    }else{
-        districtCode = parseInt(("9" + selectedDistrict + "00"));
-        let dataOfDistrict =  chartData.filter(function(row) {
-            return (row.DISTRICT_CODE == districtCode && (row.REF_YEAR >= selectedYear -yearSpan && row.REF_YEAR <= selectedYear +yearSpan));
-        });
-        for(let i = 0; i < selectedDataSets.length; i++){
+            let dataOfAllDistrictsPerYear = chartData.filter(function(row) {
+                return (row.REF_YEAR == Number(i));
+            });
+            //avoid unnecessary loop if no data for current year is available
+            //case: currentYear is lower than minimum available year
+            if(dataOfAllDistrictsPerYear.length == 0){
+                continue;
+            }
             let newEntry = {};
-            //newEntry.x = labels[selectedDataSets[i]];
-            newEntry.x = selectedDataSets[i];
-            newEntry.y = dataOfDistrict[0][selectedDataSets[i]];
+            newEntry["REF_YEAR"] = i;
+            //sum values for each selected data set per year
+            for(let j = 0; j < selectedDataSets.length; j++){
+                let currentSum = dataOfAllDistrictsPerYear.map(item => item[selectedDataSets[j]]).reduce((prev, next) => Number(prev) + Number(next));
+                newEntry[selectedDataSets[j]] = currentSum; 
+            }
             finalDataForChart.push(newEntry);
         }
         console.log(finalDataForChart);
+        loadLineChart(finalDataForChart);
+    }else{
+        districtCode = parseInt(("9" + selectedDistrict + "00"));
+        let dataOfDistrict =  chartData.filter(function(row) {
+            return (row.DISTRICT_CODE == districtCode && (row.REF_YEAR >= Number(selectedYear) - yearSpan && row.REF_YEAR <= Number(selectedYear) + yearSpan));
+        });
+        loadLineChart(dataOfDistrict);
     }
-    loadLineChart(finalDataForChart);
 }
 
-function updateBarChart(firstRender){
+function updateBarChart(){
     let districtCode; 
     let finalDataForChart = [];
     if(selectedDistrict == 0){
@@ -436,6 +462,6 @@ function updateBarChart(firstRender){
         }
         console.log(finalDataForChart);
     }
-    loadBarChart(finalDataForChart, firstRender);
+    loadBarChart(finalDataForChart);
 
 }
