@@ -495,22 +495,17 @@ function updateRadarChart(){
         let dataOfDistrict =  chartData.filter(function(row) {
             return (row.DISTRICT_CODE == districtCode && row.REF_YEAR == selectedYear);
         });
-        console.log(dataOfDistrict);
-        
         for(let i = 0; i < selectedDataSets.length; i++){
             let newEntry = {}; 
             //newEntry.x = labels[selectedDataSets[i]];
             newEntry.axis = selectedDataSets[i];
             newEntry.value = dataOfDistrict[0][selectedDataSets[i]];
-            console.log(newEntry.value);
-            if(dataOfDistrict[0][selectedDataSets[i]] > maxValue){
-                maxValue = dataOfDistrict[0][selectedDataSets[i]];
+            if(Number(dataOfDistrict[0][selectedDataSets[i]]) > maxValue){
+                maxValue = Number(dataOfDistrict[0][selectedDataSets[i]]);
             }
             finalDataForChart[0].axes.push(newEntry); 
         }
     }
-    console.log(finalDataForChart);
-    console.log(maxValue);
     loadRadarChart(finalDataForChart, maxValue);
 
 }
