@@ -244,7 +244,6 @@ function loadLineChart (data) {
         document.querySelector("#chart1 > svg").remove();
     }
     firstRunLine = false;
-    console.log(data);
     // set the dimensions and margins of the graph
     let margin = {top: 30, right: 30, bottom: 70, left: 60},
     width = 350 - margin.left - margin.right,
@@ -421,7 +420,12 @@ function updateLineChart () {
         console.log(finalDataForChart);
         loadLineChart(finalDataForChart);
     }else{
-        districtCode = parseInt(("9" + selectedDistrict + "00"));
+        if(selectedDistrict < 10){
+            districtCode = parseInt(("90" + selectedDistrict + "00"));
+        }else{
+            districtCode = parseInt(("9" + selectedDistrict + "00"));
+        }
+        
         let dataOfDistrict =  chartData.filter(function(row) {
             return (row.DISTRICT_CODE == districtCode && (row.REF_YEAR >= Number(selectedYear) - yearSpan && row.REF_YEAR <= Number(selectedYear) + yearSpan));
         });
@@ -449,7 +453,11 @@ function updateBarChart(){
             finalDataForChart.push(newEntry);
         }
     }else{
-        districtCode = parseInt(("9" + selectedDistrict + "00"));
+        if(selectedDistrict < 10){
+            districtCode = parseInt(("90" + selectedDistrict + "00"));
+        }else{
+            districtCode = parseInt(("9" + selectedDistrict + "00"));
+        }
         let dataOfDistrict =  chartData.filter(function(row) {
             return (row.DISTRICT_CODE == districtCode && row.REF_YEAR == selectedYear);
         });
