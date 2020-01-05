@@ -7,6 +7,7 @@ var minYear, maxYear;
 var yearSpan = 3;
 var firstRunLine = true;
 var firstRunBar = true;
+var firstRunRadar = true;
 
 function loadData(){
     loadDataForCharts();
@@ -22,61 +23,9 @@ async function loadDataForCharts(){
     adaptSliderRangeToData();
     updateLineChart();
     updateBarChart();
-    drawTestRadarChart();
+    updateRadarChart();
 }
 
-function drawTestRadarChart(){
-    var testData = [
-        { name: 'Allocated budget',
-            axes: [
-                {axis: 'Sales', value: 42},
-                {axis: 'Marketing', value: 20},
-                {axis: 'Development', value: 60},
-                {axis: 'Customer Support', value: 26},
-                {axis: 'Information Technology', value: 35},
-                {axis: 'Administration', value: 20}
-            ],
-    color: '#26AF32'
-            },
-            { name: 'Actual Spending',
-                axes: [
-                    {axis: 'Sales', value: 50},
-                    {axis: 'Marketing', value: 45},
-                    {axis: 'Development', value: 20},
-                    {axis: 'Customer Support', value: 20},
-                    {axis: 'Information Technology', value: 25},
-                    {axis: 'Administration', value: 23}
-                ],
-    color: '#762712'
-            },
-    { name: 'Further Test',
-                axes: [
-                    {axis: 'Sales', value: 32},
-                    {axis: 'Marketing', value: 62},
-                    {axis: 'Development', value: 35},
-                    {axis: 'Customer Support', value: 10},
-                    {axis: 'Information Technology', value: 20},
-                    {axis: 'Administration', value: 28}
-                ],
-    color: '#2a2fd4'
-            }
-        ];
-        var margin = { top: 50, right: 80, bottom: 50, left: 80 },
-            width = Math.min(700, window.innerWidth / 4) - margin.left - margin.right,
-            height = Math.min(width, window.innerHeight - margin.top - margin.bottom);
-
-    var radarChartOptions = {
-        w: 290,
-        h: 350,
-        margin: margin,
-        levels: 5,
-        roundStrokes: true,
-          color: d3.scaleOrdinal().range(["#26AF32", "#762712", "#2a2fd4"]),
-          format: '.0f'
-      };
-      // Draw the chart, get a reference the created svg element :
-      let svg_radar1 = RadarChart("#chart3", testData, radarChartOptions);
-}
 
 function fillCheckboxes(){
     var dataLabels = Object.entries(chartData[0]);
@@ -110,8 +59,9 @@ function adaptSliderRangeToData(){
 function onSliderChange(sliderElement){
     selectedYear = sliderElement.value;
     document.getElementById("selectedYear").innerHTML = selectedYear;
-    updateBarChart(false);
+    updateBarChart();
     updateLineChart();
+    updateRadarChart();
     //todo: change data of visualizations to currently selected year 
 }
 
@@ -124,6 +74,7 @@ function onCheckboxChange(clickedElement){
     
     updateBarChart();
     updateLineChart();
+    updateRadarChart();
 }
 
 function loadMapOfVienna(){
@@ -225,6 +176,7 @@ function loadMapOfVienna(){
             
             updateBarChart();
             updateLineChart();
+            updateRadarChart();
 
         }
 
@@ -393,6 +345,31 @@ function loadBarChart (data) {
         .attr("dy", "-.7em"); 
 }
 
+function loadRadarChart(data, currentMaxValue){
+
+    if(!firstRunRadar){
+        document.querySelector("#chart3 > svg").remove();
+    }
+    firstRunRadar = false;
+    // set the dimensions and margins of the graph
+    var margin = {top: 30, right: 30, bottom: 70, left: 60},
+    width = 350 - margin.left - margin.right,
+    height = 250 - margin.top - margin.bottom;
+
+    var radarChartOptions = {
+        w: width,
+        h: height,
+        margin: margin,
+        levels: 5,
+        maxValue: currentMaxValue,
+        roundStrokes: true,
+          color: d3.scaleOrdinal().range(["#26AF32", "#762712", "#2a2fd4"]),
+          format: '.0f'
+      };
+      // Draw the chart, get a reference the created svg element :
+    RadarChart("#chart3", data, radarChartOptions);
+}
+
 function updateLineChart () {
     let districtCode;
     let finalDataForChart = [];
@@ -479,3 +456,62 @@ function updateBarChart(){
     loadBarChart(finalDataForChart);
 
 }
+
+function updateRadarChart(){
+    let maxValue = 0; 
+    let districtCode; 
+    let finalDataForChart = [];
+    finalDataForChart[0] = {};
+    finalDataForChart[0].name = selectedYear;
+    finalDataForChart[0].axes = [];
+    finalDataForChart[0].color = '#2a2fd4';
+    
+    if(selectedDistrict == 0){
+        //special case, whole Vienna is selected --> sum data from all districts
+        let dataOfAllDistricts =  chartData.filter(function(row) {
+            return (row.REF_YEAR == selectedYear);
+        });
+        
+        for(let i = 0; i < selectedDataSets.length; i++){
+            let newEntry = {}; 
+            //newEntry.x = labels[selectedDataSets[i]];
+            newEntry.axis = selectedDataSets[i];
+            let currentSum = 0; 
+            for(let j = 0; j < dataOfAllDistricts.length; j++){
+                currentSum += Number(dataOfAllDistricts[j][selectedDataSets[i]]);
+            }
+            newEntry.value = currentSum;
+            if(currentSum > maxValue){
+                maxValue = currentSum;
+            }
+            finalDataForChart[0].axes.push(newEntry);
+        }
+    }else{
+        if(selectedDistrict < 10){
+            districtCode = parseInt(("90" + selectedDistrict + "00"));
+        }else{
+            districtCode = parseInt(("9" + selectedDistrict + "00"));
+        }
+        let dataOfDistrict =  chartData.filter(function(row) {
+            return (row.DISTRICT_CODE == districtCode && row.REF_YEAR == selectedYear);
+        });
+        console.log(dataOfDistrict);
+        
+        for(let i = 0; i < selectedDataSets.length; i++){
+            let newEntry = {}; 
+            //newEntry.x = labels[selectedDataSets[i]];
+            newEntry.axis = selectedDataSets[i];
+            newEntry.value = dataOfDistrict[0][selectedDataSets[i]];
+            console.log(newEntry.value);
+            if(dataOfDistrict[0][selectedDataSets[i]] > maxValue){
+                maxValue = dataOfDistrict[0][selectedDataSets[i]];
+            }
+            finalDataForChart[0].axes.push(newEntry); 
+        }
+    }
+    console.log(finalDataForChart);
+    console.log(maxValue);
+    loadRadarChart(finalDataForChart, maxValue);
+
+}
+
