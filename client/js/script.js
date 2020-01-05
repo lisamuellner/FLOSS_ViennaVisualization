@@ -20,9 +20,62 @@ async function loadDataForCharts(){
     //data loading complete - chartData is from here on available!
     fillCheckboxes();
     adaptSliderRangeToData();
-    //loadChart1();
     updateLineChart();
     updateBarChart();
+    drawTestRadarChart();
+}
+
+function drawTestRadarChart(){
+    var testData = [
+        { name: 'Allocated budget',
+            axes: [
+                {axis: 'Sales', value: 42},
+                {axis: 'Marketing', value: 20},
+                {axis: 'Development', value: 60},
+                {axis: 'Customer Support', value: 26},
+                {axis: 'Information Technology', value: 35},
+                {axis: 'Administration', value: 20}
+            ],
+    color: '#26AF32'
+            },
+            { name: 'Actual Spending',
+                axes: [
+                    {axis: 'Sales', value: 50},
+                    {axis: 'Marketing', value: 45},
+                    {axis: 'Development', value: 20},
+                    {axis: 'Customer Support', value: 20},
+                    {axis: 'Information Technology', value: 25},
+                    {axis: 'Administration', value: 23}
+                ],
+    color: '#762712'
+            },
+    { name: 'Further Test',
+                axes: [
+                    {axis: 'Sales', value: 32},
+                    {axis: 'Marketing', value: 62},
+                    {axis: 'Development', value: 35},
+                    {axis: 'Customer Support', value: 10},
+                    {axis: 'Information Technology', value: 20},
+                    {axis: 'Administration', value: 28}
+                ],
+    color: '#2a2fd4'
+            }
+        ];
+        var margin = { top: 50, right: 80, bottom: 50, left: 80 },
+            width = Math.min(700, window.innerWidth / 4) - margin.left - margin.right,
+            height = Math.min(width, window.innerHeight - margin.top - margin.bottom);
+
+    var radarChartOptions = {
+        w: 290,
+        h: 350,
+        margin: margin,
+        levels: 5,
+        roundStrokes: true,
+          color: d3.scaleOrdinal().range(["#26AF32", "#762712", "#2a2fd4"]),
+          format: '.0f'
+      };
+      // Draw the chart, get a reference the created svg element :
+      let svg_radar1 = RadarChart("#chart3", testData, radarChartOptions);
 }
 
 function fillCheckboxes(){
@@ -190,53 +243,6 @@ function loadMapOfVienna(){
                 .style('fill', 'green');
         }
     });
-}
-
-function loadChart1() {
-    // set the dimensions and margins of the graph
-    let margin = {top: 10, right: 30, bottom: 30, left: 60},
-        widthChart = 260 - margin.left - margin.right,
-        heightChart = 200 - margin.top - margin.bottom;
-
-    // append the svg object to the body of the page
-    let svgChart = d3.select("#chart1")
-        .append("svg")
-        .attr("width", widthChart + margin.left + margin.right)
-        .attr("height", heightChart + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
-
-
-    //Read the data
-    d3.csv("./data/testData.csv").then(function(data){
-
-        // Add X axis
-        let x = d3.scaleLinear()
-            .domain([0, 4000])
-            .range([ 0, widthChart ]);
-        svgChart.append("g")
-            .attr("transform", "translate(0," + heightChart + ")")
-            .call(d3.axisBottom(x));
-
-        // Add Y axis
-        let y = d3.scaleLinear()
-            .domain([0, 500000])
-            .range([ heightChart, 0]);
-        svgChart.append("g")
-            .call(d3.axisLeft(y));
-
-        // Add dots
-        svgChart.append('g')
-            .selectAll("dot")
-            .data(data)
-            .enter()
-            .append("circle")
-            .attr("cx", function (d) { return x(d.GrLivArea); } )
-            .attr("cy", function (d) { return y(d.SalePrice); } )
-            .attr("r", 1.5)
-            .style("fill", "#69b3a2");
-        })
 }
 
 function loadLineChart (data) {
