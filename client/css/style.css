@@ -68,6 +68,11 @@ header {
     fill: #69b3a2;
 }
 
+.placeholder {
+    height: 250px;
+    width: 350px;
+}
+
 #firstRowCharts{
     display: flex;
     flex-flow: row;
