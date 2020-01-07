@@ -198,7 +198,7 @@ function loadMapOfVienna(){
     });
 }
 
-function loadLineChart (data) {
+function loadLineChart (data, currentMaxValue) {
     if(!firstRunLine){
         document.querySelector("#chart1 > svg").remove();
     }
@@ -219,26 +219,10 @@ function loadLineChart (data) {
     // set the ranges
     var x = d3.scaleTime().range([0, width]);
     var y = d3.scaleLinear().range([height, 0]);
-
-    let tmpMaxValueArray = data.map(entry => {
-        return selectedDataSets.map(property => {
-          if (entry.hasOwnProperty(property)) {
-            return entry[property]
-          }
-        })
-      })
-      .reduce((total, current) => {
-          return [
-            ...total,
-            ...current
-          ]
-        },
-        []);
-    let maxValue = Math.max(...tmpMaxValueArray);
         
     // Scale the range of the data
     x.domain(d3.extent(data, function(d) { return d.REF_YEAR; }));
-    y.domain([0, maxValue]);
+    y.domain([0, currentMaxValue]);
     
     // create valuelines and append them
     let valueLines = [];
@@ -267,7 +251,7 @@ function loadLineChart (data) {
         .call(d3.axisLeft(y));
 }
 
-function loadBarChart (data) {
+function loadBarChart (data, currentMaxValue) {
 
     if(!firstRunBar){
         document.querySelector("#chart2 > svg").remove();
@@ -297,9 +281,7 @@ function loadBarChart (data) {
 		return d.x;
 	}));
         
-    y.domain([0, d3.max(data, function (d) {
-		return Number(d.y);
-	})]);
+    y.domain([0, currentMaxValue]);
 
     //todo: labels are not visible as a whole
     g.append("g")
@@ -353,7 +335,7 @@ function loadRadarChart(data, currentMaxValue){
     }
     firstRunRadar = false;
     // set the dimensions and margins of the graph
-    var margin = {top: 30, right: 30, bottom: 70, left: 60},
+    var margin = {top: 30, right: 30, bottom: 30, left: 30},
     width = 350 - margin.left - margin.right,
     height = 250 - margin.top - margin.bottom;
 
@@ -372,148 +354,154 @@ function loadRadarChart(data, currentMaxValue){
 }
 
 function updateLineChart () {
+    let maxValue = 0;
     let districtCode;
     let finalDataForChart = [];
+    let currentMinYear = Number(selectedYear) - yearSpan;
+    let currentMaxYear = Number(selectedYear) + yearSpan
+
+    let dataToProcess = [];
     if(selectedDistrict == 0){
         //special case, whole Vienna is selected --> sum data from all districts
-        let currentMinYear = Number(selectedYear) - yearSpan; 
-        let currentMaxYear = Number(selectedYear) + yearSpan
-        for(let i = currentMinYear; i <= currentMaxYear; i++){
-            //break loop if no data for current year is available
-            //case: currentYear is greater than maximum available year
-            if(i > maxYear){
-                break;
-            }
-            let dataOfAllDistrictsPerYear = chartData.filter(function(row) {
-                return (row.REF_YEAR == Number(i));
-            });
-            //avoid unnecessary loop if no data for current year is available
-            //case: currentYear is lower than minimum available year
-            if(dataOfAllDistrictsPerYear.length == 0){
-                continue;
-            }
-            let newEntry = {};
-            newEntry["REF_YEAR"] = i;
-            //sum values for each selected data set per year
-            for(let j = 0; j < selectedDataSets.length; j++){
-                let currentSum = dataOfAllDistrictsPerYear.map(item => item[selectedDataSets[j]]).reduce((prev, next) => Number(prev) + Number(next));
-                newEntry[selectedDataSets[j]] = currentSum; 
-            }
-            finalDataForChart.push(newEntry);
-        }
-        console.log(finalDataForChart);
-        loadLineChart(finalDataForChart);
+        dataToProcess = sumUpByYears(chartData);
     }else{
         if(selectedDistrict < 10){
             districtCode = parseInt(("90" + selectedDistrict + "00"));
         }else{
             districtCode = parseInt(("9" + selectedDistrict + "00"));
         }
-        
-        let dataOfDistrict =  chartData.filter(function(row) {
-            return (row.DISTRICT_CODE == districtCode && (row.REF_YEAR >= Number(selectedYear) - yearSpan && row.REF_YEAR <= Number(selectedYear) + yearSpan));
+        dataToProcess =  chartData.filter(function(row) {
+            return (row.DISTRICT_CODE == districtCode);
         });
-        loadLineChart(dataOfDistrict);
     }
+
+    for(let y = 0; y < dataToProcess.length; y++) {
+        let newEntry = {};
+        newEntry["REF_YEAR"] = dataToProcess[y].REF_YEAR;
+
+        console.log("dataToProcess!!!");
+        console.log(dataToProcess);
+
+        for (let i = 0; i < selectedDataSets.length; i++) {
+            if (Number(dataToProcess[y][selectedDataSets[i]]) > maxValue) {
+                maxValue = Number(dataToProcess[y][selectedDataSets[i]]);
+            }
+            if (dataToProcess[y].REF_YEAR < currentMinYear || dataToProcess[y].REF_YEAR > currentMaxYear) continue;
+
+            newEntry[selectedDataSets[i]] = dataToProcess[y][selectedDataSets[i]];
+
+        }
+
+        if (dataToProcess[y].REF_YEAR >= currentMinYear && dataToProcess[y].REF_YEAR <= currentMaxYear)
+            finalDataForChart.push(newEntry);
+    }
+
+    loadLineChart(finalDataForChart, maxValue);
 }
 
 function updateBarChart(){
-    let districtCode; 
+    let maxValue = 0;
+    let districtCode;
     let finalDataForChart = [];
+
+    let dataToProcess = [];
     if(selectedDistrict == 0){
         //special case, whole Vienna is selected --> sum data from all districts
-        let dataOfAllDistricts =  chartData.filter(function(row) {
-            return (row.REF_YEAR == selectedYear);
-        });
-        for(let i = 0; i < selectedDataSets.length; i++){
-            let newEntry = {}; 
-            //newEntry.x = labels[selectedDataSets[i]];
-            newEntry.x = selectedDataSets[i];
-            let currentSum = 0; 
-            for(let j = 0; j < dataOfAllDistricts.length; j++){
-                currentSum += Number(dataOfAllDistricts[j][selectedDataSets[i]]);
-            }
-            newEntry.y = currentSum;
-            finalDataForChart.push(newEntry);
-        }
+        dataToProcess = sumUpByYears(chartData);
     }else{
         if(selectedDistrict < 10){
             districtCode = parseInt(("90" + selectedDistrict + "00"));
         }else{
             districtCode = parseInt(("9" + selectedDistrict + "00"));
         }
-        let dataOfDistrict =  chartData.filter(function(row) {
-            return (row.DISTRICT_CODE == districtCode && row.REF_YEAR == selectedYear);
+        dataToProcess =  chartData.filter(function(row) {
+            return (row.DISTRICT_CODE == districtCode);
         });
-        for(let i = 0; i < selectedDataSets.length; i++){
-            let newEntry = {}; 
-            //newEntry.x = labels[selectedDataSets[i]];
-            newEntry.x = selectedDataSets[i];
-            newEntry.y = dataOfDistrict[0][selectedDataSets[i]];
-            finalDataForChart.push(newEntry); 
-        }
-        console.log(finalDataForChart);
     }
-    loadBarChart(finalDataForChart);
 
+    for(let y = 0; y < dataToProcess.length; y++) {
+        for (let i = 0; i < selectedDataSets.length; i++) {
+            if (Number(dataToProcess[y][selectedDataSets[i]]) > maxValue) {
+                maxValue = Number(dataToProcess[y][selectedDataSets[i]]);
+            }
+            if (dataToProcess[y].REF_YEAR != selectedYear) continue;
+
+            let newEntry = {};
+            newEntry.x = selectedDataSets[i];
+            newEntry.y = dataToProcess[y][selectedDataSets[i]];
+
+            finalDataForChart.push(newEntry);
+        }
+    }
+
+    loadBarChart(finalDataForChart, maxValue);
 }
 
 function updateRadarChart(){
-    let maxValue = 0; 
-    let districtCode; 
+    let maxValue = 0;
+    let districtCode;
     let finalDataForChart = [];
     finalDataForChart[0] = {};
     finalDataForChart[0].name = selectedYear;
     finalDataForChart[0].axes = [];
     finalDataForChart[0].color = '#69b3a2';
-    
+
+    let dataToProcess = [];
     if(selectedDistrict == 0){
         //special case, whole Vienna is selected --> sum data from all districts
-        let dataOfAllDistricts =  chartData.filter(function(row) {
-            return (row.REF_YEAR == selectedYear);
-        });
-        
-        for(let i = 0; i < selectedDataSets.length; i++){
-            let newEntry = {}; 
-            //newEntry.x = labels[selectedDataSets[i]];
-            newEntry.axis = selectedDataSets[i];
-            let currentSum = 0; 
-            for(let j = 0; j < dataOfAllDistricts.length; j++){
-                currentSum += Number(dataOfAllDistricts[j][selectedDataSets[i]]);
-            }
-            newEntry.value = currentSum;
-            if(currentSum > maxValue){
-                maxValue = currentSum;
-            }
-            finalDataForChart[0].axes.push(newEntry);
-        }
+        dataToProcess = sumUpByYears(chartData);
     }else{
         if(selectedDistrict < 10){
             districtCode = parseInt(("90" + selectedDistrict + "00"));
         }else{
             districtCode = parseInt(("9" + selectedDistrict + "00"));
         }
-        let dataOfDistrict =  chartData.filter(function(row) {
-            return (row.DISTRICT_CODE == districtCode);// && row.REF_YEAR == selectedYear);
+        dataToProcess =  chartData.filter(function(row) {
+            return (row.DISTRICT_CODE == districtCode);
         });
+    }
 
-        for(let y = 0; y < dataOfDistrict.length; y++) {
-            for (let i = 0; i < selectedDataSets.length; i++) {
-                if (Number(dataOfDistrict[y][selectedDataSets[i]]) > maxValue) {
-                    maxValue = Number(dataOfDistrict[y][selectedDataSets[i]]);
-                }
-                if (dataOfDistrict[y].REF_YEAR != selectedYear) continue;
-
-                let newEntry = {};
-                //newEntry.x = labels[selectedDataSets[i]];
-                newEntry.axis = selectedDataSets[i];
-                newEntry.value = dataOfDistrict[y][selectedDataSets[i]];
-
-                finalDataForChart[0].axes.push(newEntry);
+    for(let y = 0; y < dataToProcess.length; y++) {
+        for (let i = 0; i < selectedDataSets.length; i++) {
+            if (Number(dataToProcess[y][selectedDataSets[i]]) > maxValue) {
+                maxValue = Number(dataToProcess[y][selectedDataSets[i]]);
             }
+            if (dataToProcess[y].REF_YEAR != selectedYear) continue;
+
+            let newEntry = {};
+            newEntry.axis = selectedDataSets[i];
+            newEntry.value = dataToProcess[y][selectedDataSets[i]];
+
+            finalDataForChart[0].axes.push(newEntry);
         }
     }
-    loadRadarChart(finalDataForChart, maxValue);
 
+    loadRadarChart(finalDataForChart, maxValue);
+}
+
+function sumUpByYears(chartData) {
+    let summedUpData = [];
+    for (let y = minYear; y <= maxYear; y++) {
+
+        let filteredData =  chartData.filter(function(row) {
+            return (row.REF_YEAR == y);
+        });
+
+        let newEntry = {};
+        for(let j = 0; j < selectedDataSets.length; j++) {
+            let summedUpYear = 0;
+
+            for (let i = 0; i < filteredData.length; i++) {
+                summedUpYear += Number(filteredData[i][selectedDataSets[j]]);
+            }
+
+            newEntry[selectedDataSets[j]] = summedUpYear;
+            newEntry["REF_YEAR"] = +y;
+        }
+
+        summedUpData.push(newEntry);
+    }
+
+    return summedUpData;
 }
 
