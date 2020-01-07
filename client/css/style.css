@@ -47,7 +47,7 @@ header {
 
 /* Map column */
 .map {
-    max-width: 30%;
+    max-width: 25%;
     min-width: 20%;
     flex-grow: 1;
 }
