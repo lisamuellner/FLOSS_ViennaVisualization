@@ -2,19 +2,17 @@
     box-sizing: border-box;
 }
 
-ul {
-    list-style-type: none;
-    padding-inline-start: 5px;
-
-}
-
 svg {
     width: 100%;
     height: auto;
 }
 
+h2 {
+    text-align: center;
+}
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Sans, Arial, Helvetica, sans-serif;
     margin: 0;
 }
 
@@ -27,19 +25,19 @@ header {
     margin-bottom: 5px;
 }
 
-/* Column container */
-.row {
+/* Main container */
+.main {
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
-    padding-top: 20px;
     justify-content: space-evenly;
 }
 
-/* Create two unequal columns that sits next to each other */
 /* Sidebar/left column */
 .side {
-    margin-right: 20px;
+    padding-right: 3%;
+    padding-left: 3%;
+    flex-grow: 0;
 }
 
 #checkboxContainer{
@@ -48,16 +46,17 @@ header {
 }
 
 /* Map column */
-.main {
-    padding: 20px;
-    width: 20%;
+.map {
+    width: 10%;
+    flex-grow: 1;
 }
 
 .charts{
-    margin-top: 50px;
-    margin-left: 20px;
+    padding-right: 3%;
+    padding-left: 3%;
     display: flex;
     flex-flow: column;
+    flex-grow: 1;
 }
 
 .bar {
@@ -71,6 +70,7 @@ header {
 #firstRowCharts{
     display: flex;
     flex-flow: row;
+    justify-content: space-evenly;
 }
 #secondRowCharts{
     display: flex;
@@ -96,44 +96,3 @@ footer {
 }
 
 
-.slidecontainer {
-    display: flex;
-    flex-flow: column;
-}
-
-#sliderWithLabels{
-    display:flex; 
-    flex-flow: row;
-}
-
-.slider {
-    -webkit-appearance: none;
-    align-self: center;
-    width: 80%;
-    height: 15px;
-    background: #d3d3d3;
-    outline: none;
-    opacity: 0.7;
-    -webkit-transition: .2s;
-    transition: opacity .2s;
-}
-
-.slider:hover {
-    opacity: 1;
-}
-
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 15px;
-    height: 15px;
-    background: #4CAF50;
-    cursor: pointer;
-}
-
-.slider::-moz-range-thumb {
-    width: 15px;
-    height: 15px;
-    background: #4CAF50;
-    cursor: pointer;
-}

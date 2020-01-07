@@ -5,63 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>FLOSS - Visualization of Vienna</title>
 
-    <link rel="stylesheet" type="text/css" href="css/radar-chart.css">
+    <!-- include style sheets -->
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/radar-chart.css">
+    <link rel="stylesheet" type="text/css" href="css/slider.css">
 
-    <!-- include d3 -->
+    <!-- include d3 and radar chart -->
 	<script src="https://d3js.org/d3.v5.js"></script>
     <script src="//d3js.org/topojson.v1.min.js"></script>
     <script src="js/radar-chart.js"></script>
 
     <!-- include script -->
     <script src="js/script.js"></script>
-</head>
-<body onLoad="loadData()">
-<header>
-    <h1>Vienna Visualization</h1>
-</header>
 
-<div class="row">
-    <div class="side">
-        <h2>Options</h2>
-        <div id="checkboxContainer">
-        </div>
-    </div>
+</head>
+
+<body onLoad="loadData()">
+    <header>
+        <h1>Vienna Visualization</h1>
+    </header>
 
     <div class="main">
-        <p id="selectedDistrictLabel">Vienna</p>
-        <svg id="mapOfVienna"></svg>
-        <div class="slidecontainer">
-            <p>Selected year: <span id="selectedYear"></span></p>
-            <div id="sliderWithLabels">
-                <span id="minYearSlider"></span>
-                <input type="range" min="1" max="100" value="50" class="slider" id="yearSlider" oninput="onSliderChange(this)">
-                <span id="maxYearSlider"></span>
+        <div class="side">
+            <h2>Options</h2>
+            <div id="checkboxContainer">
             </div>
         </div>
+
+        <div class="map">
+            <h2 id="selectedDistrictLabel">Vienna</h2>
+            <svg id="mapOfVienna"></svg>
+            <div class="slidecontainer">
+                <p>Selected year: <span id="selectedYear"></span></p>
+                <div id="sliderWithLabels">
+                    <span id="minYearSlider"></span>
+                        <input type="range" min="1" max="100" value="50" class="slider" id="yearSlider" oninput="onSliderChange(this)">
+                    <span id="maxYearSlider"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts">
+            <h2 id="selectedDistrictLabel2">Charts and Data of Vienna</h2>
+            <div id="firstRowCharts">
+                <div id="chart1"></div>
+                <div id="chart2"></div>
+            </div>
+            <div id="secondRowCharts">
+                <div id="chart3"></div>
+                <div id="chart4">
+                    <div class="placeholder">PLACEHOLDER CHART 4</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div class="charts">
-        <div id="firstRowCharts">
-            <div id="chart1"></div>
-            <div id="chart2"></div>
-        </div>
-        <div id="secondRowCharts">
-            <div id="chart3">
-                <div class="placeholder">PLACEHOLDER CHART 3</div>
-            </div>
-            <div id="chart4">
-                <div class="placeholder">PLACEHOLDER CHART 4</div>
-            </div>
-        </div>
-
-    </div>
-
-</div>
-
-<footer>
-    Footer
-</footer>
+    <footer>
+        Footer
+    </footer>
 
 </body>
 </html>

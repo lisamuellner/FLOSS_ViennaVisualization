@@ -33,10 +33,10 @@ function fillCheckboxes(){
     for(let i = 2; i < dataLabels.length-2; i++){
         if(i <= 3){
             //preselect first two checkboxes
-            checkboxHtml += '<label><input type="checkbox" checked name="' + dataLabels[i][1] + '" value="' + dataLabels[i][0] + '" onclick="onCheckboxChange(this);">' + dataLabels[i][1] + '</label>';
+            checkboxHtml += '<label><input class="checkbox" type="checkbox" checked name="' + dataLabels[i][1] + '" value="' + dataLabels[i][0] + '" onclick="onCheckboxChange(this);">' + dataLabels[i][1] + '</label>';
             selectedDataSets.push(dataLabels[i][0]);
         }else{
-            checkboxHtml += '<label><input type="checkbox" name="' + dataLabels[i][1] + '" value="' + dataLabels[i][0] + '" onclick="onCheckboxChange(this);">' + dataLabels[i][1] + '</label>';
+            checkboxHtml += '<label><input class="checkbox" type="checkbox" name="' + dataLabels[i][1] + '" value="' + dataLabels[i][0] + '" onclick="onCheckboxChange(this);">' + dataLabels[i][1] + '</label>';
         }
     }
     document.getElementById("checkboxContainer").innerHTML = checkboxHtml;
@@ -62,7 +62,6 @@ function onSliderChange(sliderElement){
     updateBarChart();
     updateLineChart();
     updateRadarChart();
-    //todo: change data of visualizations to currently selected year 
 }
 
 function onCheckboxChange(clickedElement){
@@ -128,19 +127,21 @@ function loadMapOfVienna(){
             if (selectedArea != highlighted) {
                 selectedDistrict = d.properties.BEZNR;
                 document.getElementById("selectedDistrictLabel").innerHTML = clickedAreaName;
+                document.getElementById("selectedDistrictLabel2").innerHTML = "Charts and Data " + clickedAreaName;
                 d3.select(this)
-                    .transition(500)// TODO: Set transition
+                    .transition(500)
                     .style('fill', '#69b3a2');
                 d3.select(highlighted)
-                    .transition(500)// TODO: Set transition
+                    .transition(500)
                     .style('fill', 'green');
                 highlighted = this;
             } else {
                 //selectedDistrict = 0 --> no district selected
                 selectedDistrict = 0;
                 document.getElementById("selectedDistrictLabel").innerHTML = "Vienna";
+                document.getElementById("selectedDistrictLabel2").innerHTML = "Charts and Data of " + "Vienna";
                 d3.select(this)
-                    .transition(500)// TODO: Set transition
+                    .transition(500)
                     .style('fill', 'green');
                 highlighted = null;
             }
@@ -363,7 +364,7 @@ function loadRadarChart(data, currentMaxValue){
         levels: 5,
         maxValue: currentMaxValue,
         roundStrokes: true,
-          color: d3.scaleOrdinal().range(["#26AF32", "#762712", "#2a2fd4"]),
+          color: d3.scaleOrdinal().range(["#69b3a2", "#26AF32", "#762712"]),
           format: '.0f'
       };
       // Draw the chart, get a reference the created svg element :
@@ -464,7 +465,7 @@ function updateRadarChart(){
     finalDataForChart[0] = {};
     finalDataForChart[0].name = selectedYear;
     finalDataForChart[0].axes = [];
-    finalDataForChart[0].color = '#2a2fd4';
+    finalDataForChart[0].color = '#69b3a2';
     
     if(selectedDistrict == 0){
         //special case, whole Vienna is selected --> sum data from all districts
