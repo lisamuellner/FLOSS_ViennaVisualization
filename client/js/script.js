@@ -494,17 +494,23 @@ function updateRadarChart(){
             districtCode = parseInt(("9" + selectedDistrict + "00"));
         }
         let dataOfDistrict =  chartData.filter(function(row) {
-            return (row.DISTRICT_CODE == districtCode && row.REF_YEAR == selectedYear);
+            return (row.DISTRICT_CODE == districtCode);// && row.REF_YEAR == selectedYear);
         });
-        for(let i = 0; i < selectedDataSets.length; i++){
-            let newEntry = {}; 
-            //newEntry.x = labels[selectedDataSets[i]];
-            newEntry.axis = selectedDataSets[i];
-            newEntry.value = dataOfDistrict[0][selectedDataSets[i]];
-            if(Number(dataOfDistrict[0][selectedDataSets[i]]) > maxValue){
-                maxValue = Number(dataOfDistrict[0][selectedDataSets[i]]);
+
+        for(let y = 0; y < dataOfDistrict.length; y++) {
+            for (let i = 0; i < selectedDataSets.length; i++) {
+                if (Number(dataOfDistrict[y][selectedDataSets[i]]) > maxValue) {
+                    maxValue = Number(dataOfDistrict[y][selectedDataSets[i]]);
+                }
+                if (dataOfDistrict[y].REF_YEAR != selectedYear) continue;
+
+                let newEntry = {};
+                //newEntry.x = labels[selectedDataSets[i]];
+                newEntry.axis = selectedDataSets[i];
+                newEntry.value = dataOfDistrict[y][selectedDataSets[i]];
+
+                finalDataForChart[0].axes.push(newEntry);
             }
-            finalDataForChart[0].axes.push(newEntry); 
         }
     }
     loadRadarChart(finalDataForChart, maxValue);
