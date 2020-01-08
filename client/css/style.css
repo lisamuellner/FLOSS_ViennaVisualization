@@ -68,11 +68,6 @@ header {
     fill: #69b3a2;
 }
 
-.placeholder {
-    height: 250px;
-    width: 350px;
-}
-
 #firstRowCharts{
     display: flex;
     flex-flow: row;
@@ -84,10 +79,18 @@ header {
     justify-content: space-evenly;
 }
 
-.placeholder{
-    height: 100px;
-    margin: 0 auto;
-    padding-top: 50px;
+#districtInformation{
+    margin-left: 4%;
+    display: flex;
+    flex-flow: column;
+}
+
+#chart4{
+    display: flex;
+    flex-flow: row;
+    width: 350px;
+    margin-top: 30px;
+    justify-content: space-evenly;
 }
 
 /* Footer */
