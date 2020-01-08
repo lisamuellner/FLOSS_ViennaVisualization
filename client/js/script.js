@@ -77,6 +77,11 @@ function onCheckboxChange(clickedElement){
     updateRadarChart();
 }
 
+function onExportClick(){
+    saveSvgAsPng(document.querySelector("#chart2 > svg"), "diagram.png");
+
+}
+
 function loadMapOfVienna(){
 
     let width = 400,

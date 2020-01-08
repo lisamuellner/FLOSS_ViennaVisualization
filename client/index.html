@@ -14,7 +14,7 @@
 	<script src="https://d3js.org/d3.v5.js"></script>
     <script src="//d3js.org/topojson.v1.min.js"></script>
     <script src="js/radar-chart.js"></script>
-
+    <script src="js/saveSvgAsPng.js"></script>
     <!-- include script -->
     <script src="js/script.js"></script>
 
@@ -23,6 +23,7 @@
 <body onLoad="loadData()">
     <header>
         <h1>Vienna Visualization</h1>
+        <button onclick="onExportClick()" id="exportButton">Export</button>
     </header>
 
     <div class="main">
