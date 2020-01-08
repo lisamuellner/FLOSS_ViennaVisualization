@@ -128,7 +128,7 @@ function loadMapOfVienna(){
             if (selectedArea != highlighted) {
                 selectedDistrict = d.properties.BEZNR;
                 document.getElementById("selectedDistrictLabel").innerHTML = clickedAreaName;
-                document.getElementById("selectedDistrictLabel2").innerHTML = "Charts and Data " + clickedAreaName;
+                document.getElementById("selectedDistrictLabel2").innerHTML = "Charts and Data of" + clickedAreaName;
                 d3.select(this)
                     .transition(500)
                     .style('fill', '#69b3a2');
