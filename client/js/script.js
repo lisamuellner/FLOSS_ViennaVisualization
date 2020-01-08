@@ -77,9 +77,11 @@ function onCheckboxChange(clickedElement){
     updateRadarChart();
 }
 
-function onExportClick(){
-    saveSvgAsPng(document.querySelector("#chart2 > svg"), "diagram.png");
-
+function onExportAllClick(){
+    //todo: append year, district and selected options to file name
+    saveSvgAsPng(document.querySelector("#chart2 > svg"), "barChart.png", {backgroundColor: "white"});
+    saveSvgAsPng(document.querySelector("#chart3 > svg"), "radarChart.png", {backgroundColor: "white"});
+    saveSvgAsPng(document.querySelector("#chart1 > svg"), "lineChart.png", {backgroundColor: "white"});
 }
 
 function loadMapOfVienna(){

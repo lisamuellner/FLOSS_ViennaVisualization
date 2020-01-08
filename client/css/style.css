@@ -11,6 +11,10 @@ h2 {
     text-align: center;
 }
 
+h1{
+    text-align: center;
+}
+
 body {
     font-family: Sans, Arial, Helvetica, sans-serif;
     margin: 0;
@@ -18,7 +22,6 @@ body {
 
 /* Header/logo Title */
 header {
-    text-align: center;
     background: darkgray;
     color: white;
     padding: 2px;
