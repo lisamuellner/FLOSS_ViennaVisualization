@@ -30,7 +30,7 @@ async function loadDataForCharts(){
 function fillCheckboxes(){
     var dataLabels = Object.entries(chartData[0]);
     let checkboxHtml = "";
-    for(let i = 2; i < dataLabels.length-2; i++){
+    for(let i = 2; i < dataLabels.length-5; i++){
         if(i <= 3){
             //preselect first two checkboxes
             checkboxHtml += '<label><input class="checkbox" type="checkbox" checked name="' + dataLabels[i][1] + '" value="' + dataLabels[i][0] + '" onclick="onCheckboxChange(this);">' + dataLabels[i][1] + '</label>';
