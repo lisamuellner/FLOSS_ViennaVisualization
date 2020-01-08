@@ -27,7 +27,6 @@ async function loadDataForCharts(){
     updateRadarChart();
 }
 
-
 function fillCheckboxes(){
     var dataLabels = Object.entries(chartData[0]);
     let checkboxHtml = "";
@@ -60,6 +59,7 @@ function adaptSliderRangeToData(){
 function onSliderChange(sliderElement){
     selectedYear = sliderElement.value;
     document.getElementById("selectedYear").innerHTML = selectedYear;
+    showDistrictInformation();
     updateBarChart();
     updateLineChart();
     updateRadarChart();
