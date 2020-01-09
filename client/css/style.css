@@ -13,6 +13,7 @@ h2 {
 
 h1{
     text-align: center;
+    width: 100%;
 }
 
 body {
@@ -22,10 +23,27 @@ body {
 
 /* Header/logo Title */
 header {
+    display: flex; 
+    flex-flow: row;
     background: darkgray;
     color: white;
     padding: 2px;
     margin-bottom: 5px;
+}
+
+#exportContainer{
+    display: flex;
+    flex-flow: column;
+    justify-content: space-evenly;
+    width: 20%;
+}
+
+#exportAllButton{
+    width: 40%;
+}
+
+#selectBoxContainer{
+    flex-flow: row;
 }
 
 /* Main container */

@@ -23,13 +23,17 @@
 <body onLoad="loadData()">
     <header>
         <h1>Vienna Visualization</h1>
-        <button onclick="onExportAllClick()" id="exportButton">Export All</button>
-        <select id="exportSelectBox">
-            <option value="barChart">Bar Chart</option>
-            <option value="lineChart">Line Chart</option>
-            <option value="radarChart">Radar Chart</option>
-        </select>
-        <button onclick="onExportSelectedClick()" id="exportSelectedButton">Export Selected Charts</button>
+        <section id="exportContainer">
+            <div id="selectBoxContainer">
+                <select id="exportSelectBox">
+                    <option value="barChart">Bar Chart</option>
+                    <option value="lineChart">Line Chart</option>
+                    <option value="radarChart">Radar Chart</option>
+                </select>
+                <button onclick="onExportSelectedClick()" id="exportSelectedButton">Export Selected</button>
+            </div>
+            <button onclick="onExportAllClick()" id="exportAllButton">Export All</button>
+        </section>
     </header>
 
     <div class="main">
