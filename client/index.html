@@ -24,6 +24,12 @@
     <header>
         <h1>Vienna Visualization</h1>
         <button onclick="onExportAllClick()" id="exportButton">Export All</button>
+        <select id="exportSelectBox">
+            <option value="barChart">Bar Chart</option>
+            <option value="lineChart">Line Chart</option>
+            <option value="radarChart">Radar Chart</option>
+        </select>
+        <button onclick="onExportSelectedClick()" id="exportSelectedButton">Export Selected Charts</button>
     </header>
 
     <div class="main">

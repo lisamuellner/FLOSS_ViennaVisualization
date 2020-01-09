@@ -39,6 +39,7 @@ function fillCheckboxes(){
             checkboxHtml += '<label><input class="checkbox" type="checkbox" name="' + dataLabels[i][1] + '" value="' + dataLabels[i][0] + '" onclick="onCheckboxChange(this);">' + dataLabels[i][1] + '</label>';
         }
     }
+    
     document.getElementById("checkboxContainer").innerHTML = checkboxHtml;
     //remove first element from array which is only labeling information 
     labels = chartData.shift(); 
@@ -63,6 +64,18 @@ function onSliderChange(sliderElement){
     updateBarChart();
     updateLineChart();
     updateRadarChart();
+}
+
+function onExportSelectedClick(){
+    let selectedChart = document.getElementById("exportSelectBox").value;
+    console.log(selectedChart);
+    if(selectedChart == "barChart"){
+        saveSvgAsPng(document.querySelector("#chart2 > svg"), "barChart.png", {backgroundColor: "white"});
+    }else if(selectedChart == "radarChart"){
+        saveSvgAsPng(document.querySelector("#chart3 > svg"), "radarChart.png", {backgroundColor: "white"});
+    }else if(selectedChart == "lineChart"){
+        saveSvgAsPng(document.querySelector("#chart1 > svg"), "lineChart.png", {backgroundColor: "white"});
+    }
 }
 
 function onCheckboxChange(clickedElement){
