@@ -14,6 +14,8 @@ function loadData(){
     loadMapOfVienna();
 }
 
+var color = d3.scaleOrdinal(d3.schemeCategory10);
+
 async function loadDataForCharts(){
     var response = await fetch("http://localhost:3000/data");
     chartData = await response.json();
@@ -276,7 +278,7 @@ function loadLineChart (data, currentMaxValue) {
         svg.append("path")
         .data([data])
         .attr("fill", "none")
-      .attr("stroke", "steelblue")
+      .attr("stroke", color(i))
       .attr("stroke-width", 1.5)
         .attr("class", "line")
         .attr("d", tempValueline);
@@ -324,6 +326,8 @@ function loadBarChart (data, currentMaxValue) {
         
     y.domain([0, currentMaxValue]);
 
+    //color.domain(data.map(function (d){ return d["x"]; }));
+
     //todo: labels are not visible as a whole
     g.append("g")
         .attr("transform", "translate(0," + height + ")")
@@ -351,7 +355,9 @@ function loadBarChart (data, currentMaxValue) {
         .attr("width", x.bandwidth())
         .attr("height", function (d) {
             return height - y(d.y);
-        });
+        })
+        .attr("fill", function (d, i){ return color(i); });
+    
         
     //create labels on top of bars that display actual value
     g.selectAll(".label")        
@@ -387,7 +393,7 @@ function loadRadarChart(data, currentMaxValue){
         levels: 5,
         maxValue: currentMaxValue,
         roundStrokes: true,
-          color: d3.scaleOrdinal().range(["#69b3a2", "#26AF32", "#762712"]),
+          color: color,
           format: '.0f'
       };
       // Draw the chart, get a reference the created svg element :
