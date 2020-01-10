@@ -31,6 +31,7 @@ async function loadDataForCharts(){
 
 function fillCheckboxes(){
     var dataLabels = Object.entries(chartData[0]);
+    console.log(dataLabels);
     let checkboxHtml = "";
     for(let i = 2; i < dataLabels.length-5; i++){
         if(i <= 4){
@@ -326,7 +327,6 @@ function loadBarChart (data, currentMaxValue) {
         
     y.domain([0, currentMaxValue]);
 
-    //color.domain(data.map(function (d){ return d["x"]; }));
 
     //todo: labels are not visible as a whole
     g.append("g")
@@ -382,7 +382,7 @@ function loadRadarChart(data, currentMaxValue){
     }
     firstRunRadar = false;
     // set the dimensions and margins of the graph
-    var margin = {top: 20, right: 10, bottom: 50, left: 10},
+    var margin = {top: 40, right: 10, bottom: 50, left: 10},
     width = 350 - margin.left - margin.right,
     height = 250 - margin.top - margin.bottom;
 
@@ -509,8 +509,9 @@ function updateBarChart(){
             }
             if (dataToProcess[y].REF_YEAR != selectedYear) continue;
 
+            
             let newEntry = {};
-            newEntry.x = selectedDataSets[i];
+            newEntry.x = labels[selectedDataSets[i]];
             newEntry.y = dataToProcess[y][selectedDataSets[i]];
 
             finalDataForChart.push(newEntry);
@@ -552,7 +553,7 @@ function updateRadarChart(){
             if (dataToProcess[y].REF_YEAR != selectedYear) continue;
 
             let newEntry = {};
-            newEntry.axis = selectedDataSets[i];
+            newEntry.axis = labels[selectedDataSets[i]];
             newEntry.value = dataToProcess[y][selectedDataSets[i]];
 
             finalDataForChart[0].axes.push(newEntry);

@@ -1,5 +1,5 @@
 ﻿NUTS1;DISTRICT_CODE;POP_TOTAL;POP_MALE;POP_FEMALE;BIRTH_FEMALE;BIRTH_MALE;BIRTH_SUM;DEATH_FEMALE;DEATH_MALE;DEATH_SUM;AREA;DENSITY_OF_POPULATION;DISTRICT_BLAZON;REF_YEAR;REF_DATE
-Geocode;Bezirkscode;Einwohneranzahl - Gesamt;Einwohneranzahl - Männer;Einwohneranzahl - Frauen;Geburtenrate Weiblich;Geburtenrate - Männlich;Geburtenrate - Gesamt;Sterberate - Weiblich;Sterberate - Männlich;Sterberate - Gesamt;Fläche;Bevölkerungsdichte;Wappen;Jahr;Datum
+Geocode;Districtcode;Pop. Total;Pop. Male;Pop. Female;Birthr. Female;Birthr. Male;Birthr. Total;Deathr. Female;Deathr. Male;Deathr. Total;Area;Density of Population;Blazon;Year;Date
 AT1;90100;17630;8316;9314;58;72;130;89;106;195;2,87;6142,86;DISTRICT_BLAZON_1.png;2002;20020101
 AT1;90200;89016;43170;45846;490;491;981;430;516;946;19,24;4626,61;DISTRICT_BLAZON_2.png;2002;20020101
 AT1;90300;82227;38743;43484;370;391;761;375;510;885;7,4;11111,76;DISTRICT_BLAZON_3.png;2002;20020101
