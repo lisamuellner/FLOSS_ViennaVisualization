@@ -1,6 +1,6 @@
 var chartData; 
 var selectedYear; 
-var selectedDistrict = 0; 
+var selectedDistrict = 0;
 var selectedDataSets = []; 
 var labels;
 var minYear, maxYear;
@@ -66,18 +66,6 @@ function onSliderChange(sliderElement){
     updateRadarChart();
 }
 
-function onExportSelectedClick(){
-    let selectedChart = document.getElementById("exportSelectBox").value;
-    console.log(selectedChart);
-    if(selectedChart == "barChart"){
-        saveSvgAsPng(document.querySelector("#chart2 > svg"), "barChart.png", {backgroundColor: "white"});
-    }else if(selectedChart == "radarChart"){
-        saveSvgAsPng(document.querySelector("#chart3 > svg"), "radarChart.png", {backgroundColor: "white"});
-    }else if(selectedChart == "lineChart"){
-        saveSvgAsPng(document.querySelector("#chart1 > svg"), "lineChart.png", {backgroundColor: "white"});
-    }
-}
-
 function onCheckboxChange(clickedElement){
     selectedDataSets = [];
     let selectedCheckBoxes = document.querySelectorAll('input[type=checkbox]:checked');
@@ -90,11 +78,42 @@ function onCheckboxChange(clickedElement){
     updateRadarChart();
 }
 
+function onExportSelectedClick(){
+    let selectedChart = document.getElementById("exportSelectBox").value;
+    console.log(selectedChart);
+
+    let selection = selectedYear +"_"+ document.getElementById("selectedDistrictLabel").innerHTML// +"_"+ selectedDataSets
+    if(selectedChart == "barChart"){
+        saveSvgAsPng(document.querySelector("#chart2 > svg"), "barChart_"+selection+".png", {backgroundColor: "white"});
+    }else if(selectedChart == "radarChart"){
+        saveSvgAsPng(document.querySelector("#chart3 > svg"), "radarChart_"+selection+".png", {backgroundColor: "white"});
+    }else if(selectedChart == "lineChart"){
+        saveSvgAsPng(document.querySelector("#chart1 > svg"), "lineChart_"+selection+".png", {backgroundColor: "white"});
+    }
+}
+
 function onExportAllClick(){
-    //todo: append year, district and selected options to file name
-    saveSvgAsPng(document.querySelector("#chart2 > svg"), "barChart.png", {backgroundColor: "white"});
-    saveSvgAsPng(document.querySelector("#chart3 > svg"), "radarChart.png", {backgroundColor: "white"});
-    saveSvgAsPng(document.querySelector("#chart1 > svg"), "lineChart.png", {backgroundColor: "white"});
+    let selection = selectedYear +"_"+ document.getElementById("selectedDistrictLabel").innerHTML// +"_"+ selectedDataSets
+    saveSvgAsPng(document.querySelector("#chart2 > svg"), "barChart_"+selection+".png", {backgroundColor: "white"});
+    saveSvgAsPng(document.querySelector("#chart3 > svg"), "radarChart_"+selection+".png", {backgroundColor: "white"});
+    saveSvgAsPng(document.querySelector("#chart1 > svg"), "lineChart_"+selection+".png", {backgroundColor: "white"});
+
+    // // attempt to create gif from charts
+    // let encoder = new GIFEncoder();
+    // encoder.setRepeat(0); //0  -> loop forever
+    // encoder.setDelay(500);
+    //
+    // encoder.start();
+    //
+    // let image1 = document.querySelector("#chart2 > svg");
+    // //console.log(image1);
+    //
+    // encoder.setSize(image1.width, image1.height);
+    // encoder.addFrame(image1, true);
+    // encoder.finish();
+    //
+    //
+    // console.log("DONE");
 }
 
 function loadMapOfVienna(){
@@ -148,7 +167,7 @@ function loadMapOfVienna(){
             if (selectedArea != highlighted) {
                 selectedDistrict = d.properties.BEZNR;
                 document.getElementById("selectedDistrictLabel").innerHTML = clickedAreaName;
-                document.getElementById("selectedDistrictLabel2").innerHTML = "Charts and Data of" + clickedAreaName;
+                document.getElementById("selectedDistrictLabel2").innerHTML = "Charts and Data of " + clickedAreaName;
                 d3.select(this)
                     .transition(500)
                     .style('fill', '#69b3a2');
@@ -410,7 +429,7 @@ function showDistrictInformation(){
     let area = filteredData[0].AREA; 
     let densityOfPopulation = filteredData[0].DENSITY_OF_POPULATION;
     document.getElementById("area").innerHTML = area + " km<sup>2</sup>";
-    document.getElementById("densityOfPopulation").innerHTML = densityOfPopulation + "/km<sup>2</sup";
+    document.getElementById("densityOfPopulation").innerHTML = densityOfPopulation + "/km<sup>2</sup>";
     document.getElementById("blazon").src = ("img/" + blazonImageName);
 }
 
