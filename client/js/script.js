@@ -376,7 +376,7 @@ function loadRadarChart(data, currentMaxValue){
     }
     firstRunRadar = false;
     // set the dimensions and margins of the graph
-    var margin = {top: 30, right: 30, bottom: 30, left: 30},
+    var margin = {top: 20, right: 10, bottom: 50, left: 10},
     width = 350 - margin.left - margin.right,
     height = 250 - margin.top - margin.bottom;
 
