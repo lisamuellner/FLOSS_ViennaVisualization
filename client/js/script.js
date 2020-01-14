@@ -100,23 +100,6 @@ function onExportAllClick(){
     saveSvgAsPng(document.querySelector("#chart2 > svg"), "barChart_"+selection+".png", {backgroundColor: "white"});
     saveSvgAsPng(document.querySelector("#chart3 > svg"), "radarChart_"+selection+".png", {backgroundColor: "white"});
     saveSvgAsPng(document.querySelector("#chart1 > svg"), "lineChart_"+selection+".png", {backgroundColor: "white"});
-
-    // // attempt to create gif from charts
-    // let encoder = new GIFEncoder();
-    // encoder.setRepeat(0); //0  -> loop forever
-    // encoder.setDelay(500);
-    //
-    // encoder.start();
-    //
-    // let image1 = document.querySelector("#chart2 > svg");
-    // //console.log(image1);
-    //
-    // encoder.setSize(image1.width, image1.height);
-    // encoder.addFrame(image1, true);
-    // encoder.finish();
-    //
-    //
-    // console.log("DONE");
 }
 
 function loadMapOfVienna(){
@@ -148,8 +131,6 @@ function loadMapOfVienna(){
             .attr("d", path)
             .attr("stroke-width", 10)
             .on("click",  clicked)
-            //.on("mouseover", highlight)
-            //.on("mouseout", unhighlight)
             .append("title")
                 .text(d => d.properties.name);
 
@@ -223,21 +204,6 @@ function loadMapOfVienna(){
             updateLineChart();
             updateRadarChart();
 
-        }
-
-        // highlight clicked area (currently unused)
-        function highlight(d) {
-            if(centered === d) { return; }
-            d3.select(this)
-                .transition()//Set transition
-                .style('fill', '#69b3a2');
-        }
-
-        // unhighlight clicked area (currently unused)
-        function unhighlight() {
-            d3.select(this)
-                .transition()//Set transition
-                .style('fill', 'green');
         }
     });
 }
@@ -327,8 +293,6 @@ function loadBarChart (data, currentMaxValue) {
         
     y.domain([0, currentMaxValue]);
 
-
-    //todo: labels are not visible as a whole
     g.append("g")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x))
@@ -336,7 +300,7 @@ function loadBarChart (data, currentMaxValue) {
     .attr("y", 0)
     .attr("x", 9)
     .attr("dy", ".35em")
-    .attr("transform", "rotate(90)")
+    .attr("transform", "rotate(45)")
     .style("text-anchor", "start");
         
     g.append("g")
@@ -396,7 +360,7 @@ function loadRadarChart(data, currentMaxValue){
           color: color,
           format: '.0f'
       };
-      // Draw the chart, get a reference the created svg element :
+    // Draw the chart, get a reference the created svg element :
     RadarChart("#chart3", data, radarChartOptions);
 }
 

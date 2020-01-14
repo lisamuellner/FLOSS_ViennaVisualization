@@ -5,7 +5,7 @@ var data = [];
 class DataEndpoint {
 
     constructor(){
-        const csvFile = fs.createReadStream('./server/data/data_v2.csv');
+        const csvFile = fs.createReadStream('./server/data/data.csv');
         csvFile.pipe(csv({ separator: ';' }))
         .on('data', (row) => {
             data.push(row);
