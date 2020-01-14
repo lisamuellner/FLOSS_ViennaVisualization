@@ -35,7 +35,7 @@ function fillCheckboxes(){
     let checkboxHtml = "";
     for(let i = 2; i < dataLabels.length-5; i++){
         if(i <= 4){
-            //preselect first two checkboxes
+            //preselect first three checkboxes
             checkboxHtml += '<label><input class="checkbox" type="checkbox" checked name="' + dataLabels[i][1] + '" value="' + dataLabels[i][0] + '" onclick="onCheckboxChange(this);">' + dataLabels[i][1] + '</label>';
             selectedDataSets.push(dataLabels[i][0]);
         }else{
@@ -229,7 +229,12 @@ function loadLineChart (data, currentMaxValue) {
     // set the ranges
     var x = d3.scaleTime().range([0, width]);
     var y = d3.scaleLinear().range([height, 0]);
-        
+
+    // format the data
+    data.forEach(function(d) {
+        d.REF_YEAR = new Date(d.REF_YEAR.toString());
+    });
+
     // Scale the range of the data
     x.domain(d3.extent(data, function(d) { return d.REF_YEAR; }));
     y.domain([0, currentMaxValue]);
@@ -250,11 +255,13 @@ function loadLineChart (data, currentMaxValue) {
         .attr("class", "line")
         .attr("d", tempValueline);
     }
-     
+    
+
     // Add the X Axis
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x));
+        .call(
+            d3.axisBottom(x).tickFormat(d3.timeFormat("%Y")).ticks(6));
 
     // Add the Y Axis
     svg.append("g")
