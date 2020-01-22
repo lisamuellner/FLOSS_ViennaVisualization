@@ -13,7 +13,7 @@ Then there has to be a basic structure passed into the server that needs at leas
 <br/>This entrys are:  **NUTS1**; **District Code**; at least one **Attribute**;( there can be additional entries) ; **Year**; **Date**.
 This entry structure has to be always provided otherwise it will not work.
 To make the designing process understandable and comprehensible, we created an example for the dataset "population". In this data set there are 16 entries. They are briefly described via the following picture.
-![Heading Description](readmePics/discription_header.JPG)
+![Heading Description](picsForReadme/discription_header.JPG)
 <br/> The first row is a standardized description from the "digitales Wien" website.  
 <br/> The second row is for the labeling in the visualisation.
 <br/> The third row (and further)are the actual data entries.
@@ -34,22 +34,22 @@ To give a preview about the table merging, we'll show this process with the CSV 
 
 First we look at the data we want and delete unnecessary attributes in "Bevölkerung seit 1869 Wien"
 So in this case we delete NUTS2,NUTS3 and SUB_District_Code 
-![DeletingUnnecessary Data](readmePics/discription_ex1.JPG)
+![DeletingUnnecessary Data](picsForReadme/discription_ex1.JPG)
 <br/>Also we have to cut away all rows from the start till January 2002, because we have for all other datasets only detailed inforamtions since 2002.
 <br/>In the next step, will take the attributes we need from the "Sterbefälle seit 2002 - Gemeindebezirke Wien“, because all the other inforamtions stay the same.
 <br/>So we take the Sex, Death and Ref_Year and add it in the other datasheet.
 
-![AddingData](readmePics/discription_ex2.JPG)
+![AddingData](picsForReadme/discription_ex2.JPG)
 <br/>But we have now entries that show Sex "1" = female and Sex "2" = Male.
 <br/>So we take and copy all of that data sets with Sex = "1" for 2002 next to Sex = "2"
 <br/>It should look like this now:
-![Datas](readmePics/discription_ex3.JPG)
+![Datas](picsForReadme/discription_ex3.JPG)
 
 <br/> Now we merge the different genders to the according death columns and get two new columns "Death_Female" and "Death_Male".
 <br/> To get the Death_Sum we just add the male and female deaths together and put it into a new coloum.
 <br/> Now we rearrange our data set so it fits in the specification from 2. In the end we get a dataset, which looks like this.
 
-![Datas](readmePics/discription_ex4.JPG)
+![Datas](picsForReadme/discription_ex4.JPG)
 <br/> To complete the whole data set is pretty straight forward now, it's just adding attributes like in the example above.
 
 ## 4 - Future datasets
